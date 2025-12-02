@@ -1,0 +1,75 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Tauri App",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "tauri", "dev"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Tauri App (No Cache)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "tauri", "dev"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "HA_INSTALLER_NO_CACHE": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Tauri App (Mock Mode)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "tauri", "dev"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "HA_INSTALLER_MOCK": "true"
+      }
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Tauri (Debug Rust)",
+      "cargo": {
+        "args": [
+          "build",
+          "--manifest-path=./src-tauri/Cargo.toml",
+          "--no-default-features"
+        ],
+        "problemMatcher": "$rustc"
+      },
+      "sourceLanguages": ["rust"],
+      "preLaunchTask": "dev-server",
+      "env": {
+        "RUST_BACKTRACE": "full"
+      }
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Tauri (Debug Rust, Mock Mode)",
+      "cargo": {
+        "args": [
+          "build",
+          "--manifest-path=./src-tauri/Cargo.toml",
+          "--no-default-features"
+        ],
+        "problemMatcher": "$rustc"
+      },
+      "sourceLanguages": ["rust"],
+      "preLaunchTask": "dev-server",
+      "env": {
+        "RUST_BACKTRACE": "full",
+        "HA_INSTALLER_MOCK": "true"
+      }
+    }
+  ]
+}

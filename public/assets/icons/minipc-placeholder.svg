@@ -1,0 +1,11 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mini PC placeholder -->
+  <rect x="10" y="16" width="44" height="32" rx="4" fill="#18BCF2" opacity="0.15"/>
+  <rect x="10" y="16" width="44" height="32" rx="4" stroke="#18BCF2" stroke-width="2"/>
+  <!-- Vents -->
+  <line x1="18" y1="24" x2="46" y2="24" stroke="#18BCF2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="18" y1="30" x2="46" y2="30" stroke="#18BCF2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="18" y1="36" x2="46" y2="36" stroke="#18BCF2" stroke-width="2" stroke-linecap="round"/>
+  <!-- Power LED -->
+  <circle cx="18" cy="42" r="2" fill="#18BCF2"/>
+</svg>

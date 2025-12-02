@@ -1,0 +1,83 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":preserveSemverRanges",
+    "group:allNonMajor",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "labels": ["dependencies"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "UTC",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "description": "Group Tauri packages",
+      "matchPackagePatterns": ["^@tauri-apps/", "^tauri"],
+      "groupName": "tauri",
+      "groupSlug": "tauri"
+    },
+    {
+      "description": "Group Lit packages",
+      "matchPackagePatterns": ["^lit", "^@lit/"],
+      "groupName": "lit",
+      "groupSlug": "lit"
+    },
+    {
+      "description": "Group Web Awesome packages",
+      "matchPackagePatterns": ["webawesome", "@awesome.me"],
+      "groupName": "web-awesome",
+      "groupSlug": "web-awesome"
+    },
+    {
+      "description": "Group Playwright packages",
+      "matchPackagePatterns": ["^@playwright/", "^playwright"],
+      "groupName": "playwright",
+      "groupSlug": "playwright"
+    },
+    {
+      "description": "Group testing packages",
+      "matchPackagePatterns": [
+        "^@web/test-runner",
+        "^@open-wc/testing",
+        "^sinon"
+      ],
+      "groupName": "testing",
+      "groupSlug": "testing"
+    },
+    {
+      "description": "Group Rust crates",
+      "matchManagers": ["cargo"],
+      "groupName": "rust-dependencies",
+      "groupSlug": "rust-deps"
+    },
+    {
+      "description": "Group GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "groupSlug": "gha"
+    },
+    {
+      "description": "Auto-merge patch updates",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Auto-merge minor dev dependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+  "rust": {
+    "enabled": true
+  }
+}

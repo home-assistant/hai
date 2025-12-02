@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Virtual Machine / Monitor placeholder -->
+  <rect x="10" y="12" width="44" height="32" rx="3" fill="#18BCF2" opacity="0.15"/>
+  <rect x="10" y="12" width="44" height="32" rx="3" stroke="#18BCF2" stroke-width="2"/>
+  <!-- Screen content - window -->
+  <rect x="16" y="18" width="32" height="20" rx="2" fill="#18BCF2" opacity="0.3"/>
+  <!-- Stand -->
+  <path d="M26 44H38V48H26V44Z" fill="#18BCF2"/>
+  <path d="M22 48H42V52H22V48Z" fill="#18BCF2" opacity="0.5"/>
+</svg>

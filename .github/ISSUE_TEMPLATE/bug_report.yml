@@ -1,0 +1,99 @@
+name: Bug Report
+description: Report a problem with the installer
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug!
+        Please fill out the information below to help us investigate.
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Operating System
+      description: What OS are you running the installer on?
+      options:
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Windows 11
+        - Windows 10
+        - Linux (Ubuntu/Debian)
+        - Linux (Fedora/RHEL)
+        - Linux (Other)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation-path
+    attributes:
+      label: Installation Path
+      description: What were you trying to install?
+      options:
+        - Raspberry Pi / SBC
+        - Mini PC / NUC
+        - Home Assistant Yellow
+        - Home Assistant Green
+        - Proxmox VM
+        - UTM VM (macOS)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Installer Version
+      description: Which version of the installer? (shown in app or filename)
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly
+      placeholder: "When I clicked 'Flash', the app showed an error..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: What should have happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Open the installer
+        2. Select Raspberry Pi 5
+        3. Insert SD card
+        4. Click Flash
+        5. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or Screenshots
+      description: Paste any error messages or attach screenshots
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I am running the latest version of the installer
+          required: false

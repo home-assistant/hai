@@ -1,0 +1,54 @@
+name: Device Support Request
+description: Request support for a new device or board
+labels: ["device-support", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Want to see a new device supported? Let us know!
+
+  - type: input
+    id: device-name
+    attributes:
+      label: Device Name
+      description: Full name of the device
+      placeholder: "ODROID-M2"
+    validations:
+      required: true
+
+  - type: input
+    id: manufacturer
+    attributes:
+      label: Manufacturer
+      placeholder: "Hardkernel"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device-type
+    attributes:
+      label: Device Type
+      options:
+        - Single Board Computer (SBC)
+        - Mini PC / NUC
+        - Official Home Assistant Hardware
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: haos-support
+    attributes:
+      label: Home Assistant OS Support
+      description: Is there already a HAOS image for this device?
+      placeholder: "Yes - https://github.com/home-assistant/operating-system/releases"
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Additional Details
+      description: Any other relevant information (links, specs, etc.)
+    validations:
+      required: false

@@ -1,0 +1,17 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simple placeholder for Casita mascot - to be replaced with official graphics -->
+  <!-- House body -->
+  <path d="M20 55 L60 20 L100 55 L100 100 L20 100 Z" fill="#18BCF2" stroke="#0D9BD3" stroke-width="2"/>
+  <!-- Roof -->
+  <path d="M15 55 L60 15 L105 55" fill="none" stroke="#0D9BD3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Door -->
+  <rect x="50" y="70" width="20" height="30" rx="2" fill="#FFFFFF"/>
+  <!-- Windows (eyes) -->
+  <circle cx="40" cy="65" r="8" fill="#FFFFFF"/>
+  <circle cx="80" cy="65" r="8" fill="#FFFFFF"/>
+  <!-- Pupils -->
+  <circle cx="42" cy="65" r="4" fill="#09202E"/>
+  <circle cx="82" cy="65" r="4" fill="#09202E"/>
+  <!-- Smile -->
+  <path d="M45 82 Q60 92 75 82" fill="none" stroke="#09202E" stroke-width="3" stroke-linecap="round"/>
+</svg>

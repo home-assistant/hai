@@ -1,0 +1,15 @@
+# Default owners for everything
+* @home-assistant/installer-team
+
+# Rust backend
+/src-tauri/ @home-assistant/installer-backend
+
+# Frontend components
+/src/ @home-assistant/installer-frontend
+
+# CI/CD and infrastructure
+/.github/ @home-assistant/installer-infra
+/renovate.json @home-assistant/installer-infra
+
+# Documentation
+*.md @home-assistant/docs-team

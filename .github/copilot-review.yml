@@ -1,0 +1,33 @@
+# Configuration for GitHub Copilot code review
+
+reviews:
+  # Auto-review settings
+  auto_review:
+    enabled: true
+
+  # What to focus on
+  focus_areas:
+    - security
+    - error_handling
+    - performance
+    - accessibility
+
+  # Language-specific guidance
+  languages:
+    rust:
+      - Check for proper error handling with Result types
+      - Ensure no unwrap() in production code paths
+      - Verify async code properly handles cancellation
+      - Check for potential panics
+    typescript:
+      - Ensure proper typing (no `any`)
+      - Check for accessibility in components
+      - Verify event cleanup in Lit lifecycle
+      - Check for memory leaks in subscriptions
+
+  # Custom review prompts
+  prompts:
+    - "Does this change handle offline/network error scenarios?"
+    - "Are there any potential security issues with user input?"
+    - "Is the UI accessible (keyboard navigation, screen readers)?"
+    - "Does this follow the visual-first design principle?"

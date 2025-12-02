@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circuit board / SBC placeholder -->
+  <rect x="8" y="12" width="48" height="40" rx="4" fill="#18BCF2" opacity="0.15"/>
+  <rect x="8" y="12" width="48" height="40" rx="4" stroke="#18BCF2" stroke-width="2"/>
+  <!-- Chip -->
+  <rect x="22" y="24" width="20" height="16" rx="2" fill="#18BCF2"/>
+  <!-- Pins -->
+  <rect x="12" y="18" width="4" height="3" rx="1" fill="#18BCF2"/>
+  <rect x="12" y="26" width="4" height="3" rx="1" fill="#18BCF2"/>
+  <rect x="12" y="34" width="4" height="3" rx="1" fill="#18BCF2"/>
+  <rect x="12" y="42" width="4" height="3" rx="1" fill="#18BCF2"/>
+  <rect x="48" y="18" width="4" height="3" rx="1" fill="#18BCF2"/>
+  <rect x="48" y="26" width="4" height="3" rx="1" fill="#18BCF2"/>
+  <rect x="48" y="34" width="4" height="3" rx="1" fill="#18BCF2"/>
+  <rect x="48" y="42" width="4" height="3" rx="1" fill="#18BCF2"/>
+</svg>

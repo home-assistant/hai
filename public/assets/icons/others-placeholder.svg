@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Others / Documentation icon -->
+  <rect x="12" y="8" width="40" height="48" rx="4" fill="#18BCF2" opacity="0.15"/>
+  <rect x="12" y="8" width="40" height="48" rx="4" stroke="#18BCF2" stroke-width="2"/>
+  <!-- Document lines -->
+  <line x1="20" y1="20" x2="44" y2="20" stroke="#18BCF2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="20" y1="28" x2="44" y2="28" stroke="#18BCF2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="20" y1="36" x2="36" y2="36" stroke="#18BCF2" stroke-width="2" stroke-linecap="round"/>
+  <!-- External link arrow -->
+  <path d="M38 44L46 44L46 36" stroke="#18BCF2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M46 44L38 36" stroke="#18BCF2" stroke-width="2" stroke-linecap="round"/>
+</svg>

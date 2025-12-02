@@ -1,0 +1,45 @@
+[package]
+name = "hai"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "hai_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["time", "fs", "io-util"] }
+reqwest = { version = "0.12", features = ["stream", "json", "multipart"] }
+futures-util = "0.3"
+sha2 = "0.10"
+hex = "0.4"
+directories = "5"
+thiserror = "2"
+xz2 = "0.1"
+urlencoding = "2"
+
+# Platform-specific dependencies for block device enumeration
+[target.'cfg(target_os = "macos")'.dependencies]
+plist = "1"
+security-framework = "2"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "macros"] }
+tempfile = "3"
+serial_test = "3"
+mockito = "1"
+
