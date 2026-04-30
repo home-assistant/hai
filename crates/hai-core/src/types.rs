@@ -1,3 +1,9 @@
+//! Type definitions for hai-core
+//!
+//! This module contains all the shared types used across the Home Assistant
+//! Installer, including block device representations, flash progress,
+//! and configuration types.
+
 use serde::{Deserialize, Serialize};
 
 /// Represents a block device (SD card, USB drive, etc.)
@@ -102,7 +108,7 @@ pub struct Device {
     pub haos: HaosConfig,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum DeviceCategory {
     RaspberryPi,
@@ -280,10 +286,50 @@ pub struct ProxmoxVmResult {
     pub ip_address: Option<String>,
 }
 
+// ============================================================================
+// UTM Types (macOS)
+// ============================================================================
+
+/// Configuration for creating a UTM virtual machine
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UtmVmConfig {
+    /// VM name
+    pub name: String,
+    /// Path to the HAOS qcow2 image file
+    pub image_path: String,
+    /// Number of CPU cores
+    pub cpu_cores: u32,
+    /// Memory in MB
+    pub memory_mb: u32,
+    /// Disk size in GB
+    pub disk_size_gb: u32,
+    /// Whether to start VM after creation
+    pub auto_start: bool,
+}
+
+/// UTM VM creation result
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UtmVmResult {
+    /// The created VM name
+    pub name: String,
+    /// Path to the VM bundle
+    pub path: Option<String>,
+}
+
+/// UTM application status
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UtmStatus {
+    /// Whether UTM is installed
+    pub installed: bool,
+    /// UTM version if installed
+    pub version: Option<String>,
+    /// Path to UTM application
+    pub path: Option<String>,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json;
 
     // DeviceType enum tests
     #[test]
@@ -574,8 +620,8 @@ mod tests {
 
         assert_eq!(request.device_id, deserialized.device_id);
         assert_eq!(request.board, deserialized.board);
-        assert_eq!(request.verify, false);
-        assert_eq!(deserialized.verify, false);
+        assert!(!request.verify);
+        assert!(!deserialized.verify);
     }
 
     // Additional comprehensive tests
@@ -663,5 +709,235 @@ mod tests {
             manifest.devices[0].category,
             deserialized.devices[0].category
         );
+    }
+
+    // UTM types tests
+    #[test]
+    fn test_utm_vm_config_roundtrip() {
+        let config = UtmVmConfig {
+            name: "Home Assistant".to_string(),
+            image_path: "/path/to/image.qcow2".to_string(),
+            cpu_cores: 2,
+            memory_mb: 2048,
+            disk_size_gb: 32,
+            auto_start: true,
+        };
+
+        let json = serde_json::to_string(&config).unwrap();
+        let deserialized: UtmVmConfig = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(config.name, deserialized.name);
+        assert_eq!(config.cpu_cores, deserialized.cpu_cores);
+        assert_eq!(config.memory_mb, deserialized.memory_mb);
+        assert_eq!(config.disk_size_gb, deserialized.disk_size_gb);
+        assert_eq!(config.auto_start, deserialized.auto_start);
+    }
+
+    #[test]
+    fn test_utm_status_roundtrip() {
+        let status = UtmStatus {
+            installed: true,
+            version: Some("4.0.0".to_string()),
+            path: Some("/Applications/UTM.app".to_string()),
+        };
+
+        let json = serde_json::to_string(&status).unwrap();
+        let deserialized: UtmStatus = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(status.installed, deserialized.installed);
+        assert_eq!(status.version, deserialized.version);
+        assert_eq!(status.path, deserialized.path);
+    }
+
+    // ============================================================================
+    // Edge case tests
+    // ============================================================================
+
+    // FlashProgress edge cases
+    #[test]
+    fn test_flash_progress_zero_values() {
+        let progress = FlashProgress {
+            stage: FlashStage::Downloading,
+            progress: 0,
+            bytes_processed: 0,
+            total_bytes: 0,
+            message: "".to_string(),
+        };
+        let json = serde_json::to_string(&progress).unwrap();
+        let parsed: FlashProgress = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.progress, 0);
+        assert_eq!(parsed.bytes_processed, 0);
+        assert_eq!(parsed.total_bytes, 0);
+        assert_eq!(parsed.message, "");
+    }
+
+    #[test]
+    fn test_flash_progress_max_values() {
+        let progress = FlashProgress {
+            stage: FlashStage::Complete,
+            progress: 100,
+            bytes_processed: u64::MAX,
+            total_bytes: u64::MAX,
+            message: "Done".to_string(),
+        };
+        let json = serde_json::to_string(&progress).unwrap();
+        let parsed: FlashProgress = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.progress, 100);
+        assert_eq!(parsed.bytes_processed, u64::MAX);
+        assert_eq!(parsed.total_bytes, u64::MAX);
+    }
+
+    // BlockDevice edge cases
+    #[test]
+    fn test_block_device_all_optional_none() {
+        let device = BlockDevice {
+            id: "/dev/sdb".to_string(),
+            name: "Unknown".to_string(),
+            size: 1_000_000_000,
+            device_type: DeviceType::Unknown,
+            removable: true,
+            model: None,
+            vendor: None,
+        };
+        let json = serde_json::to_string(&device).unwrap();
+        assert!(json.contains("\"model\":null"));
+        assert!(json.contains("\"vendor\":null"));
+
+        let parsed: BlockDevice = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.id, "/dev/sdb");
+        assert_eq!(parsed.model, None);
+        assert_eq!(parsed.vendor, None);
+    }
+
+    // HaosImage edge cases
+    #[test]
+    fn test_haos_image_empty_sha256() {
+        let image = HaosImage {
+            board: "rpi5-64".to_string(),
+            download_url: "https://example.com/image.xz".to_string(),
+            size: 500_000_000,
+            sha256: "".to_string(),
+        };
+        let json = serde_json::to_string(&image).unwrap();
+        let parsed: HaosImage = serde_json::from_str(&json).unwrap();
+        assert!(parsed.sha256.is_empty());
+        assert_eq!(parsed.board, "rpi5-64");
+        assert_eq!(parsed.size, 500_000_000);
+    }
+
+    // Device edge cases
+    #[test]
+    fn test_device_full_structure() {
+        let device = Device {
+            id: "rpi5".to_string(),
+            name: "Raspberry Pi 5".to_string(),
+            category: DeviceCategory::RaspberryPi,
+            image_url: Some("/assets/rpi5.png".to_string()),
+            haos: HaosConfig {
+                board: "rpi5-64".to_string(),
+                download_url: "https://github.com/.../haos_rpi5-64-{version}.img.xz".to_string(),
+            },
+        };
+        let json = serde_json::to_string(&device).unwrap();
+        let parsed: Device = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.id, "rpi5");
+        assert_eq!(parsed.category, DeviceCategory::RaspberryPi);
+        assert_eq!(parsed.name, "Raspberry Pi 5");
+        assert_eq!(parsed.haos.board, "rpi5-64");
+    }
+
+    // ProxmoxVmConfig and ProxmoxVmResult edge cases
+    #[test]
+    fn test_proxmox_vm_config_roundtrip() {
+        let config = ProxmoxVmConfig {
+            vm_id: 100,
+            name: "homeassistant".to_string(),
+            node: "pve".to_string(),
+            storage: "local-lvm".to_string(),
+            cpu_cores: 4,
+            memory_mb: 4096,
+            disk_size_gb: 32,
+            auto_start: true,
+        };
+        let json = serde_json::to_string(&config).unwrap();
+        let parsed: ProxmoxVmConfig = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.vm_id, 100);
+        assert_eq!(parsed.memory_mb, 4096);
+        assert_eq!(parsed.cpu_cores, 4);
+        assert_eq!(parsed.disk_size_gb, 32);
+        assert!(parsed.auto_start);
+    }
+
+    #[test]
+    fn test_proxmox_vm_result_with_ip() {
+        let result = ProxmoxVmResult {
+            vm_id: 100,
+            node: "pve".to_string(),
+            ip_address: Some("192.168.1.100".to_string()),
+        };
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(json.contains("192.168.1.100"));
+
+        let parsed: ProxmoxVmResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.vm_id, 100);
+        assert_eq!(parsed.ip_address, Some("192.168.1.100".to_string()));
+    }
+
+    #[test]
+    fn test_proxmox_vm_result_without_ip() {
+        let result = ProxmoxVmResult {
+            vm_id: 100,
+            node: "pve".to_string(),
+            ip_address: None,
+        };
+        let json = serde_json::to_string(&result).unwrap();
+        let parsed: ProxmoxVmResult = serde_json::from_str(&json).unwrap();
+        assert!(parsed.ip_address.is_none());
+        assert_eq!(parsed.vm_id, 100);
+        assert_eq!(parsed.node, "pve");
+    }
+
+    // UtmVmConfig and UtmVmResult edge cases
+    #[test]
+    fn test_utm_vm_config_roundtrip_full() {
+        let config = UtmVmConfig {
+            name: "Home Assistant".to_string(),
+            image_path: "/path/to/image.qcow2".to_string(),
+            cpu_cores: 2,
+            memory_mb: 2048,
+            disk_size_gb: 32,
+            auto_start: false,
+        };
+        let json = serde_json::to_string(&config).unwrap();
+        let parsed: UtmVmConfig = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.disk_size_gb, 32);
+        assert_eq!(parsed.name, "Home Assistant");
+        assert_eq!(parsed.cpu_cores, 2);
+        assert_eq!(parsed.memory_mb, 2048);
+        assert!(!parsed.auto_start);
+    }
+
+    #[test]
+    fn test_utm_vm_result_roundtrip_full() {
+        let result = UtmVmResult {
+            name: "Home Assistant".to_string(),
+            path: Some("/Users/test/VMs/HA.utm".to_string()),
+        };
+        let json = serde_json::to_string(&result).unwrap();
+        let parsed: UtmVmResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.name, "Home Assistant");
+        assert_eq!(parsed.path, Some("/Users/test/VMs/HA.utm".to_string()));
+    }
+
+    #[test]
+    fn test_utm_vm_result_without_path() {
+        let result = UtmVmResult {
+            name: "Home Assistant".to_string(),
+            path: None,
+        };
+        let json = serde_json::to_string(&result).unwrap();
+        let parsed: UtmVmResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed.name, "Home Assistant");
+        assert!(parsed.path.is_none());
     }
 }

@@ -30,28 +30,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
-      
+
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
-      
+
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
-      
+
       - name: Run tests with coverage
-        run: cargo llvm-cov --lcov --output-path lcov.info
-        working-directory: src-tauri
-      
+        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+
       - name: Upload Rust coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: src-tauri/lcov.info
+          files: lcov.info
           flags: rust
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -60,26 +57,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run unit tests with coverage
         run: npm run test:unit -- --coverage
-      
-      - name: Run integration tests with coverage
-        run: npm run test:integration -- --coverage
-      
+
       - name: Upload frontend coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: coverage/lcov.info
+          files: crates/hai-desktop/frontend/coverage/lcov.info
           flags: frontend
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -127,31 +121,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Lint frontend
         run: npm run lint
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
-      
+
       - name: Rust format check
-        run: cargo fmt --check
-        working-directory: src-tauri
-      
+        run: cargo fmt --all --check
+
       - name: Rust clippy
-        run: cargo clippy -- -D warnings
-        working-directory: src-tauri
+        run: cargo clippy --workspace -- -D warnings
 ```
 
 ---
@@ -175,11 +167,12 @@ coverage:
 flags:
   rust:
     paths:
-      - src-tauri/src/
+      - crates/hai-core/src/
+      - crates/hai-desktop/src/
     carryforward: true
   frontend:
     paths:
-      - src/
+      - crates/hai-desktop/frontend/src/
     carryforward: true
 
 comment:
@@ -205,29 +198,30 @@ permissions:
   contents: write
 
 jobs:
-  # Validate tag matches version in Cargo.toml
+  # Validate tag matches version in workspace Cargo.toml
   validate-version:
     name: Validate Version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check version consistency
         run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/v}"
-          CARGO_VERSION=$(grep '^version' src-tauri/Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          # Get version from workspace Cargo.toml
+          CARGO_VERSION=$(grep -A1 '\[workspace.package\]' Cargo.toml | grep 'version' | sed 's/.*"\(.*\)".*/\1/')
           PKG_VERSION=$(node -p "require('./package.json').version")
-          
+
           if [ "$TAG_VERSION" != "$CARGO_VERSION" ]; then
             echo "Tag version ($TAG_VERSION) doesn't match Cargo.toml ($CARGO_VERSION)"
             exit 1
           fi
-          
+
           if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
             echo "Tag version ($TAG_VERSION) doesn't match package.json ($PKG_VERSION)"
             exit 1
           fi
-          
+
           echo "Version $TAG_VERSION validated"
 
   # Run all tests before release
@@ -309,21 +303,21 @@ jobs:
       - name: Generate checksums
         shell: bash
         run: |
-          cd src-tauri/target/${{ matrix.target }}/release/bundle
+          cd target/${{ matrix.target }}/release/bundle
           find . -type f \( -name "*.dmg" -o -name "*.app.tar.gz" -o -name "*.msi" -o -name "*.exe" -o -name "*.deb" -o -name "*.AppImage" \) -exec sha256sum {} \; > checksums.txt
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
           path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.app.tar.gz
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/checksums.txt
+            target/${{ matrix.target }}/release/bundle/**/*.dmg
+            target/${{ matrix.target }}/release/bundle/**/*.app.tar.gz
+            target/${{ matrix.target }}/release/bundle/**/*.msi
+            target/${{ matrix.target }}/release/bundle/**/*.exe
+            target/${{ matrix.target }}/release/bundle/**/*.deb
+            target/${{ matrix.target }}/release/bundle/**/*.AppImage
+            target/${{ matrix.target }}/release/bundle/**/checksums.txt
           retention-days: 5
       
       - name: Determine release type
@@ -473,13 +467,15 @@ No private keys to manage or rotate.
 
 ## Release Process
 
-1. Update version in `package.json` and `src-tauri/Cargo.toml`
+1. Update version in `package.json` and root `Cargo.toml` workspace section
 2. Create PR with version bump
 3. Merge to main after review
 4. Create and push tag: `git tag v1.0.0 && git push origin v1.0.0`
 5. CI builds and creates draft release
 6. Review draft release and artifacts
 7. Publish release (makes it immutable)
+
+Note: The workspace uses `version.workspace = true` in crate Cargo.toml files, so version only needs updating in the root workspace Cargo.toml.
 
 ---
 

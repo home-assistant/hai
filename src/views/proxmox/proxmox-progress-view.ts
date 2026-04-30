@@ -21,10 +21,10 @@ type InstallStage =
   | "error";
 
 // Stages that have measurable progress (0-100%)
-const MEASURABLE_STAGES: InstallStage[] = ["downloading", "extracting"];
+const MEASURABLE_STAGES: InstallStage[] = ["downloading"];
 
-// Stages that use indeterminate progress (waiting for something)
-const INDETERMINATE_STAGES: InstallStage[] = ["writing", "verifying", "finalizing", "ready", "updating"];
+// Stages that use indeterminate progress (waiting for something, or unknown total size)
+const INDETERMINATE_STAGES: InstallStage[] = ["extracting", "writing", "verifying", "finalizing", "ready", "updating"];
 
 @customElement("proxmox-progress-view")
 export class ProxmoxProgressView extends LitElement {

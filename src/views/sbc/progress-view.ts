@@ -458,6 +458,9 @@ export class ProgressView extends LitElement {
     // Add with-bubble class when showing thinking bubble (not complete or error)
     const hasBubble = stage !== "complete" && stage !== "error";
 
+    // Use indeterminate progress when total_bytes is 0 (e.g., during extraction)
+    const isIndeterminate = totalBytes === 0 && stage !== "complete";
+
     return html`
       <div class="mascot-container ${hasBubble ? "with-bubble" : ""}">
         ${this._renderCasitaMascot(stage, title)}
@@ -469,14 +472,14 @@ export class ProgressView extends LitElement {
       ${this._renderStagesIndicator(stage)}
 
       <div class="progress-section">
-        <progress-bar .progress=${percentage}></progress-bar>
+        <progress-bar .progress=${percentage} ?indeterminate=${isIndeterminate}></progress-bar>
         <div class="progress-details">
           <div class="progress-left">
-            <span class="bytes-info">${totalBytes > 0 ? `${formatBytes(bytesProcessed)} / ${formatBytes(totalBytes)}` : ""}</span>
+            <span class="bytes-info">${isIndeterminate ? formatBytes(bytesProcessed) : (totalBytes > 0 ? `${formatBytes(bytesProcessed)} / ${formatBytes(totalBytes)}` : "")}</span>
             <span class="speed">${totalBytes > 0 ? this._calculateSpeed() : ""}</span>
           </div>
           <div class="progress-right">
-            <span class="percentage">${percentage}%</span>
+            <span class="percentage">${isIndeterminate ? "" : `${percentage}%`}</span>
             <span class="eta">${totalBytes > 0 ? (eta ? `${eta} remaining` : "Calculating...") : ""}</span>
           </div>
         </div>

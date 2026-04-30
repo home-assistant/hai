@@ -15,7 +15,11 @@ dist
 dist-ssr
 
 # Rust/Cargo
+target/
 src-tauri/target/
+
+# Tauri generated schemas (for capabilities auto-completion)
+crates/hai-desktop/gen/schemas/
 
 # Mise (local tooling)
 .cargo/

@@ -926,3 +926,260 @@ This document outlines the phased implementation of HAI (Home Assistant Installe
 - [ ] Backup restoration
 - [ ] Additional VM platforms if demanded
 - [ ] Tauri auto-updater (if usage patterns warrant)
+
+---
+
+## Workspace Restructuring
+
+**Goal:** Restructure HAI into a Cargo workspace with shared core logic to enable future TUI support and better code organization.
+
+### Motivation
+
+The current monolithic Tauri app structure makes it difficult to:
+- Share business logic with other frontends (CLI, TUI)
+- Test core logic independently
+- Build a minimal live USB installer for mini PCs
+
+By extracting core logic into a shared library (`hai-core`), we enable:
+- **Code reuse** across desktop and future TUI installers
+- **Better testing** with isolated core logic
+- **Minimal live USB** (~100MB) for mini PC installations
+- **Consistent behavior** across all installation methods
+
+### Target Structure
+
+```
+home-assistant-installer/
+├── Cargo.toml                    # Workspace root
+├── crates/
+│   ├── hai-core/                 # Shared Rust library
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── lib.rs
+│   │       ├── error.rs          # Unified error types
+│   │       ├── types.rs          # Shared data types
+│   │       ├── devices.rs        # Block device enumeration
+│   │       ├── download.rs       # Image download + verification
+│   │       ├── flash.rs          # Disk writing + verification
+│   │       ├── proxmox.rs        # Proxmox VE API
+│   │       ├── utm.rs            # UTM automation (macOS)
+│   │       ├── network.rs        # HA readiness checks
+│   │       └── mock.rs           # Mock mode support
+│   │
+│   └── hai-desktop/              # Tauri desktop app
+│       ├── Cargo.toml
+│       ├── tauri.conf.json
+│       ├── src/
+│       │   ├── main.rs
+│       │   ├── lib.rs
+│       │   └── commands.rs       # Thin wrappers around hai-core
+│       └── frontend/             # Web UI (Lit + Web Awesome)
+│           ├── package.json
+│           ├── index.html
+│           └── src/
+│
+├── docs/                         # Documentation (unchanged)
+├── test/                         # E2E tests (unchanged)
+└── .github/                      # CI/CD (unchanged)
+```
+
+---
+
+### Phase W1: Workspace Infrastructure
+
+**Goal:** Create Cargo workspace and move existing code.
+
+#### Workspace Setup
+
+- [x] Create root `Cargo.toml` with workspace configuration
+- [x] Create `crates/` directory structure
+- [x] Move `src-tauri/` to `crates/hai-desktop/`
+- [x] Create `src-tauri` symlink to `crates/hai-desktop` for Tauri CLI compatibility
+- [x] Update `tauri.conf.json` paths (frontendDist, beforeBuildCommand cwd)
+- [x] Frontend remains at project root (simpler than moving to nested folder)
+
+#### Verification
+
+- [x] `cargo check --workspace` passes
+- [x] `npm run tauri dev` works from project root
+- [x] `npm run tauri build` produces working app
+
+---
+
+### Phase W2: Extract hai-core - Types & Errors
+
+**Goal:** Create hai-core crate with shared types and error handling.
+
+#### Core Types
+
+- [x] Create `crates/hai-core/Cargo.toml`
+- [x] Extract `BlockDevice`, `DeviceType`, `Partition` types
+- [x] Extract `FlashProgress`, `FlashStage`, `FlashRequest`, `FlashResult` types
+- [x] Extract `HaosRelease`, `HaosImage` types
+- [x] Extract Proxmox types (`ProxmoxCredentials`, `ProxmoxSession`, etc.)
+- [x] Extract UTM types (`UtmConfig`, `UtmVm`, `UtmVmStatus`)
+
+#### Error Handling
+
+- [x] Create unified `Error` enum with `thiserror`
+- [x] Add error variants for network, IO, device, permission errors
+
+#### Progress Callback Trait
+
+- [x] Define `ProgressCallback` trait for generic progress reporting
+- [x] Implement `NoOpProgress` for cases where progress isn't needed
+
+#### Verification
+
+- [x] All types compile in hai-core
+- [x] hai-desktop can import types from hai-core
+
+---
+
+### Phase W3: Extract hai-core - Device Enumeration
+
+**Goal:** Extract block device enumeration to hai-core.
+
+#### Device Module
+
+- [x] Move macOS device enumeration (diskutil/plist parsing)
+- [x] Move Linux device enumeration (lsblk/JSON parsing)
+- [x] Move Windows device enumeration (PowerShell)
+- [x] Add `list_devices()` public function
+
+#### Verification
+
+- [x] Device enumeration works on macOS
+- [x] Mock mode still works
+
+---
+
+### Phase W4: Extract hai-core - Download Module
+
+**Goal:** Extract image download and verification to hai-core.
+
+#### Download Module
+
+- [x] Move version fetching (version.home-assistant.io)
+- [x] Move GitHub release fetching
+- [x] Move image download with progress callback (10MB intervals)
+- [x] Move SHA256 checksum verification
+- [x] Move xz extraction with indeterminate progress
+- [x] Move caching logic
+
+#### Verification
+
+- [x] Image download works with progress
+- [x] Checksum verification works
+- [x] Caching works
+
+---
+
+### Phase W5: Extract hai-core - Flash Module
+
+**Goal:** Extract disk writing to hai-core.
+
+#### Flash Module
+
+- [x] Move macOS disk writer (dd with admin auth)
+- [x] Move Linux disk writer (direct write)
+- [x] Move Windows disk writer (PowerShell)
+- [x] Move safety validations (system drive protection)
+- [x] Move unmount/eject logic
+- [x] Move verification logic
+- [x] Use progress callback trait with channel-based updates from blocking tasks
+- [x] Progress updates every 10MB for write and verify stages
+
+#### Verification
+
+- [x] Mock flash works with progress
+- [x] Real flash works (manual test)
+
+---
+
+### Phase W6: Extract hai-core - Proxmox Module
+
+**Goal:** Extract Proxmox API integration to hai-core.
+
+#### Proxmox Module
+
+- [x] Move authentication logic
+- [x] Move node listing
+- [x] Move storage listing
+- [x] Move VM creation with progress callback
+- [x] Image upload with progress (via commands.rs using download module)
+- [x] Mock mode support with simulated progress
+- [ ] Move task waiting (real implementation)
+- [ ] Move IP detection (real implementation)
+
+#### Verification
+
+- [x] Proxmox flow works end-to-end (mock mode)
+
+---
+
+### Phase W7: Extract hai-core - UTM Module
+
+**Goal:** Extract UTM automation to hai-core.
+
+#### UTM Module
+
+- [x] Move UTM detection (check_utm_status via Info.plist)
+- [x] Move VM creation with AppleScript automation
+- [x] Mock mode support with simulated progress
+- [x] Platform-conditional compilation (macOS only)
+- [ ] Move VM start/stop/delete commands
+- [ ] Move status and IP detection
+
+#### Verification
+
+- [x] UTM flow works end-to-end (requires macOS with UTM)
+
+---
+
+### Phase W8: Update hai-desktop Commands
+
+**Goal:** Convert hai-desktop commands to thin wrappers.
+
+#### Command Wrappers
+
+- [x] Create `TauriProgressCallback` implementing `ProgressCallback` trait
+- [x] Update `list_block_devices` command (uses hai_core::devices)
+- [x] Update `flash_image` command (uses hai_core::download and hai_core::disk_writer)
+- [x] Update all Proxmox commands (uses hai_core::proxmox)
+- [x] Update all UTM commands (uses hai_core::utm)
+- [x] Update network check commands (check_ha_ready, check_ha_updated)
+- [x] Update release/manifest commands (uses hai_core::download)
+
+#### Verification
+
+- [x] All existing functionality works
+- [x] E2E tests pass
+- [x] Mock mode works
+
+---
+
+### Phase W9: Future - hai-tui (Deferred)
+
+**Goal:** Create terminal UI application for live USB.
+
+This phase is deferred to a later milestone. The workspace structure is prepared for future addition:
+
+```
+crates/
+├── hai-core/       # ✓ Shared library
+├── hai-desktop/    # ✓ Tauri app
+└── hai-tui/        # Future: Terminal UI
+    ├── Cargo.toml
+    └── src/
+        ├── main.rs
+        ├── app.rs      # State machine
+        ├── ui.rs       # Ratatui rendering
+        └── screens/    # Screen implementations
+```
+
+Features for hai-tui:
+- Ratatui-based terminal UI
+- Same core logic as hai-desktop
+- Minimal dependencies for small binary
+- Static musl build for live USB

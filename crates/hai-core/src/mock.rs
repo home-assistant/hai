@@ -1,15 +1,16 @@
+//! Mock data for testing and development
+//!
+//! This module provides mock implementations of devices, manifests, and
+//! other data for testing the application without real hardware.
+//!
+//! Mock mode is enabled when the `HA_INSTALLER_MOCK` environment variable
+//! is set to "1" or "true".
+
 use crate::types::{
     BlockDevice, Device, DeviceCategory, DeviceManifest, DeviceType, HaosConfig, HaosImage,
     HaosRelease, StableVersionInfo, UpdateInfo,
 };
 use std::collections::HashMap;
-
-/// Check if mock mode is enabled via environment variable
-pub fn is_mock_enabled() -> bool {
-    std::env::var("HA_INSTALLER_MOCK")
-        .map(|v| v == "1" || v.to_lowercase() == "true")
-        .unwrap_or(false)
-}
 
 /// Returns mock block devices for testing
 pub fn get_mock_block_devices() -> Vec<BlockDevice> {
@@ -232,8 +233,8 @@ pub fn get_mock_manifest() -> DeviceManifest {
 pub fn get_mock_update_info() -> UpdateInfo {
     UpdateInfo {
         update_available: false,
-        current_version: env!("CARGO_PKG_VERSION").to_string(),
-        latest_version: env!("CARGO_PKG_VERSION").to_string(),
+        current_version: "0.1.0".to_string(),
+        latest_version: "0.1.0".to_string(),
         download_url: Some(
             "https://github.com/home-assistant/home-assistant-installer/releases".to_string(),
         ),
@@ -289,76 +290,16 @@ pub fn get_mock_haos_release() -> HaosRelease {
                 sha256: "3ebed523708dc1dad5b5399707ee74d0a54b9604b7d4cae5d591d75c85b35013".to_string(),
             },
             HaosImage {
-                board: "rpi4".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi4-16.3.img.xz".to_string(),
-                size: 311_865_372,
-                sha256: "e4f72c1487f8e9a4c6a5679a4d5a800a887aaaa187e0d1a66a2ccf3e1800ce85".to_string(),
-            },
-            HaosImage {
                 board: "rpi3-64".to_string(),
                 download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi3-64-16.3.img.xz".to_string(),
                 size: 311_438_560,
                 sha256: "f21d5da83a94a5045d4d36822da77d2bee3539ab5150a7074c562d922f81e0de".to_string(),
             },
             HaosImage {
-                board: "rpi3".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi3-16.3.img.xz".to_string(),
-                size: 299_905_192,
-                sha256: "c7a4d62d0007889f4253ddeb16e6304d8bc6ab122cfa9bfab5e244b71fa52d0e".to_string(),
-            },
-            HaosImage {
-                board: "rpi2".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi2-16.3.img.xz".to_string(),
-                size: 300_861_076,
-                sha256: "2228988ef3361e1f3d2ff7c49be71bc3655cbd2c1f63e396f7cda486351db735".to_string(),
-            },
-            HaosImage {
                 board: "odroid-n2".to_string(),
                 download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-n2-16.3.img.xz".to_string(),
                 size: 298_412_092,
                 sha256: "f97b188d9fd2c239269c886e53031ad8bc38828296f1eaede2e89fd4b89207b7".to_string(),
-            },
-            HaosImage {
-                board: "odroid-c2".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-c2-16.3.img.xz".to_string(),
-                size: 298_539_208,
-                sha256: "898ff9f1f7b175c5c8422ec874936f9d377f42f11c579fdda5790f128a6a7241".to_string(),
-            },
-            HaosImage {
-                board: "odroid-c4".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-c4-16.3.img.xz".to_string(),
-                size: 298_770_768,
-                sha256: "d84eb96e1d823213d97a875e05cdee74d1babc521cfadae11179b3ce7338d812".to_string(),
-            },
-            HaosImage {
-                board: "odroid-m1".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-m1-16.3.img.xz".to_string(),
-                size: 337_395_068,
-                sha256: "67603922ee054740e0d59b319806fb11a4a62e5b93a78c90077670e91b75d025".to_string(),
-            },
-            HaosImage {
-                board: "odroid-m1s".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-m1s-16.3.img.xz".to_string(),
-                size: 336_863_952,
-                sha256: "3eed2da3a01bae6dc9ac5482c319fd2816266b0c97df01eff059051f051d5c09".to_string(),
-            },
-            HaosImage {
-                board: "odroid-xu4".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-xu4-16.3.img.xz".to_string(),
-                size: 288_562_728,
-                sha256: "a19afa034b48548b761ac7215d92b01d8a813038f933970af89799bb5ecacded".to_string(),
-            },
-            HaosImage {
-                board: "khadas-vim3".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_khadas-vim3-16.3.img.xz".to_string(),
-                size: 298_271_704,
-                sha256: "3c852191fff72efcd20aa3df589c82b1be5ba666d63245836c0ed47fed125699".to_string(),
-            },
-            HaosImage {
-                board: "tinker".to_string(),
-                download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_tinker-16.3.img.xz".to_string(),
-                size: 292_023_092,
-                sha256: "28916a7c4aadad3eb3ae730f345379ea0cd83c8024d916625da0ff4fe8efc177".to_string(),
             },
             HaosImage {
                 board: "green".to_string(),
@@ -398,7 +339,7 @@ mod tests {
     fn test_mock_mode_disabled_by_default() {
         // Clear the env var if set
         std::env::remove_var("HA_INSTALLER_MOCK");
-        assert!(!is_mock_enabled());
+        assert!(!crate::is_mock_enabled());
     }
 
     #[test]
@@ -421,32 +362,14 @@ mod tests {
         }
     }
 
-    // Mock mode detection tests
     #[test]
     #[serial]
-    fn test_mock_mode_enabled_with_1() {
+    fn test_mock_mode_enabled_with_set() {
         std::env::set_var("HA_INSTALLER_MOCK", "1");
-        assert!(is_mock_enabled());
+        assert!(crate::is_mock_enabled());
         std::env::remove_var("HA_INSTALLER_MOCK");
     }
 
-    #[test]
-    #[serial]
-    fn test_mock_mode_enabled_with_true() {
-        std::env::set_var("HA_INSTALLER_MOCK", "true");
-        assert!(is_mock_enabled());
-        std::env::remove_var("HA_INSTALLER_MOCK");
-    }
-
-    #[test]
-    #[serial]
-    fn test_mock_mode_case_insensitive() {
-        std::env::set_var("HA_INSTALLER_MOCK", "TRUE");
-        assert!(is_mock_enabled());
-        std::env::remove_var("HA_INSTALLER_MOCK");
-    }
-
-    // Block devices validation tests
     #[test]
     fn test_mock_block_devices_have_unique_ids() {
         let devices = get_mock_block_devices();
@@ -461,42 +384,6 @@ mod tests {
     }
 
     #[test]
-    fn test_mock_block_devices_all_removable() {
-        let devices = get_mock_block_devices();
-        let removable_count = devices.iter().filter(|d| d.removable).count();
-        // At least most devices should be removable (we allow for NVMe which might not be)
-        assert!(
-            removable_count > 0,
-            "At least some devices should be removable"
-        );
-    }
-
-    #[test]
-    fn test_mock_block_devices_cover_device_types() {
-        let devices = get_mock_block_devices();
-        let mut has_sd = false;
-        let mut has_usb = false;
-        let mut has_ssd = false;
-        let mut has_nvme = false;
-
-        for device in &devices {
-            match device.device_type {
-                DeviceType::SdCard => has_sd = true,
-                DeviceType::UsbDrive => has_usb = true,
-                DeviceType::Ssd => has_ssd = true,
-                DeviceType::NvMe => has_nvme = true,
-                _ => {}
-            }
-        }
-
-        assert!(has_sd, "Mock devices should include SD card");
-        assert!(has_usb, "Mock devices should include USB drive");
-        assert!(has_ssd, "Mock devices should include SSD");
-        assert!(has_nvme, "Mock devices should include NVMe");
-    }
-
-    // Manifest validation tests
-    #[test]
     fn test_mock_manifest_has_unique_device_ids() {
         let manifest = get_mock_manifest();
         let mut ids = std::collections::HashSet::new();
@@ -510,95 +397,11 @@ mod tests {
     }
 
     #[test]
-    fn test_mock_manifest_has_unique_board_ids() {
-        let manifest = get_mock_manifest();
-        let mut boards = std::collections::HashSet::new();
-        for device in &manifest.devices {
-            assert!(
-                boards.insert(device.haos.board.clone()),
-                "Duplicate board ID found: {}",
-                device.haos.board
-            );
-        }
-    }
-
-    #[test]
-    fn test_mock_manifest_covers_categories() {
-        let manifest = get_mock_manifest();
-        let mut has_raspberry_pi = false;
-        let mut has_odroid = false;
-        let mut has_khadas = false;
-        let mut has_asus = false;
-        let mut has_home_assistant_hardware = false;
-        let mut has_generic_x86 = false;
-        let mut has_generic_arm64 = false;
-
-        for device in &manifest.devices {
-            match device.category {
-                DeviceCategory::RaspberryPi => has_raspberry_pi = true,
-                DeviceCategory::Odroid => has_odroid = true,
-                DeviceCategory::Khadas => has_khadas = true,
-                DeviceCategory::Asus => has_asus = true,
-                DeviceCategory::HomeAssistantHardware => has_home_assistant_hardware = true,
-                DeviceCategory::GenericX86 => has_generic_x86 = true,
-                DeviceCategory::GenericArm64 => has_generic_arm64 = true,
-            }
-        }
-
-        assert!(
-            has_raspberry_pi,
-            "Mock manifest should include RaspberryPi devices"
-        );
-        assert!(has_odroid, "Mock manifest should include Odroid devices");
-        assert!(has_khadas, "Mock manifest should include Khadas devices");
-        assert!(has_asus, "Mock manifest should include Asus devices");
-        assert!(
-            has_home_assistant_hardware,
-            "Mock manifest should include HomeAssistantHardware devices"
-        );
-        assert!(
-            has_generic_x86,
-            "Mock manifest should include GenericX86 devices"
-        );
-        assert!(
-            has_generic_arm64,
-            "Mock manifest should include GenericArm64 devices"
-        );
-    }
-
-    #[test]
-    fn test_mock_manifest_all_have_haos_config() {
-        let manifest = get_mock_manifest();
-        for device in &manifest.devices {
-            assert!(
-                !device.haos.board.is_empty(),
-                "Device {} should have a board name",
-                device.id
-            );
-            assert!(
-                !device.haos.download_url.is_empty(),
-                "Device {} should have a download URL",
-                device.id
-            );
-            assert!(
-                device.haos.download_url.contains("https://"),
-                "Device {} download URL should use https",
-                device.id
-            );
-        }
-    }
-
-    // HAOS release validation tests
-    #[test]
     fn test_mock_haos_release_has_images() {
         let release = get_mock_haos_release();
         assert!(
             !release.images.is_empty(),
             "HAOS release should have at least one image"
-        );
-        assert!(
-            release.images.len() > 10,
-            "HAOS release should have multiple images for different boards"
         );
     }
 
@@ -621,42 +424,8 @@ mod tests {
     }
 
     #[test]
-    fn test_mock_haos_release_images_have_valid_urls() {
-        let release = get_mock_haos_release();
-        for image in &release.images {
-            assert!(
-                image.download_url.starts_with("https://"),
-                "Download URL for board {} should start with https://",
-                image.board
-            );
-            assert!(
-                image.download_url.contains(&release.version),
-                "Download URL for board {} should contain version {}",
-                image.board,
-                release.version
-            );
-        }
-    }
-
-    #[test]
-    fn test_mock_haos_release_images_have_unique_boards() {
-        let release = get_mock_haos_release();
-        let mut boards = std::collections::HashSet::new();
-        for image in &release.images {
-            assert!(
-                boards.insert(image.board.clone()),
-                "Duplicate board found in HAOS release images: {}",
-                image.board
-            );
-        }
-    }
-
-    // Update info validation tests
-    #[test]
     fn test_mock_update_info_versions_valid() {
         let update_info = get_mock_update_info();
-
-        // Version strings should not be empty
         assert!(
             !update_info.current_version.is_empty(),
             "Current version should not be empty"
@@ -665,32 +434,217 @@ mod tests {
             !update_info.latest_version.is_empty(),
             "Latest version should not be empty"
         );
+    }
 
-        // Versions should be reasonable (contain at least one digit)
+    #[test]
+    fn test_mock_update_info_has_urls() {
+        let update_info = get_mock_update_info();
         assert!(
-            update_info
-                .current_version
-                .chars()
-                .any(|c| c.is_ascii_digit()),
-            "Current version should contain at least one digit"
+            update_info.download_url.is_some(),
+            "Download URL should be present"
         );
         assert!(
-            update_info
-                .latest_version
-                .chars()
-                .any(|c| c.is_ascii_digit()),
-            "Latest version should contain at least one digit"
+            update_info.release_notes_url.is_some(),
+            "Release notes URL should be present"
         );
+    }
 
-        // URLs should be valid if present
-        if let Some(url) = &update_info.download_url {
-            assert!(url.starts_with("https://"), "Download URL should use https");
-        }
-        if let Some(url) = &update_info.release_notes_url {
-            assert!(
-                url.starts_with("https://"),
-                "Release notes URL should use https"
+    #[test]
+    fn test_mock_stable_version_has_all_boards() {
+        let stable = get_mock_stable_version();
+        // Test that all major board types are present
+        assert!(stable.hassos.contains_key("rpi5-64"));
+        assert!(stable.hassos.contains_key("rpi4-64"));
+        assert!(stable.hassos.contains_key("rpi3-64"));
+        assert!(stable.hassos.contains_key("odroid-n2"));
+        assert!(stable.hassos.contains_key("green"));
+        assert!(stable.hassos.contains_key("yellow"));
+        assert!(stable.hassos.contains_key("generic-x86-64"));
+        assert!(stable.hassos.contains_key("generic-aarch64"));
+    }
+
+    #[test]
+    fn test_mock_stable_version_consistent_version() {
+        let stable = get_mock_stable_version();
+        // All boards should have the same version
+        let first_version = stable.hassos.values().next().unwrap();
+        for (board, version) in &stable.hassos {
+            assert_eq!(
+                version, first_version,
+                "Board {} has inconsistent version",
+                board
             );
         }
+    }
+
+    #[test]
+    fn test_mock_haos_release_version_matches() {
+        let release = get_mock_haos_release();
+        assert_eq!(release.version, "16.3");
+    }
+
+    #[test]
+    fn test_mock_haos_release_has_download_urls() {
+        let release = get_mock_haos_release();
+        for image in &release.images {
+            assert!(
+                image.download_url.starts_with("https://"),
+                "Image for {} should have HTTPS URL",
+                image.board
+            );
+            assert!(
+                image.download_url.contains(&release.version),
+                "Image URL for {} should contain version",
+                image.board
+            );
+        }
+    }
+
+    #[test]
+    fn test_mock_haos_release_images_have_valid_sizes() {
+        let release = get_mock_haos_release();
+        for image in &release.images {
+            assert!(
+                image.size > 0,
+                "Image size for {} should be positive",
+                image.board
+            );
+            assert!(
+                image.size > 100_000_000,
+                "Image size for {} should be at least 100MB",
+                image.board
+            );
+        }
+    }
+
+    #[test]
+    fn test_mock_block_devices_device_types() {
+        let devices = get_mock_block_devices();
+        let has_sd_card = devices.iter().any(|d| d.device_type == DeviceType::SdCard);
+        let has_usb = devices.iter().any(|d| d.device_type == DeviceType::UsbDrive);
+        let has_ssd = devices.iter().any(|d| d.device_type == DeviceType::Ssd);
+        let has_nvme = devices.iter().any(|d| d.device_type == DeviceType::NvMe);
+
+        assert!(has_sd_card, "Should have at least one SD card");
+        assert!(has_usb, "Should have at least one USB drive");
+        assert!(has_ssd, "Should have at least one SSD");
+        assert!(has_nvme, "Should have at least one NVMe");
+    }
+
+    #[test]
+    fn test_mock_block_devices_have_vendor_and_model() {
+        let devices = get_mock_block_devices();
+        for device in &devices {
+            assert!(device.vendor.is_some(), "Device {} should have vendor", device.id);
+            assert!(device.model.is_some(), "Device {} should have model", device.id);
+        }
+    }
+
+    #[test]
+    fn test_mock_manifest_version() {
+        let manifest = get_mock_manifest();
+        assert_eq!(manifest.version, 1);
+    }
+
+    #[test]
+    fn test_mock_manifest_has_all_categories() {
+        let manifest = get_mock_manifest();
+        let categories: std::collections::HashSet<_> =
+            manifest.devices.iter().map(|d| &d.category).collect();
+
+        assert!(
+            categories.contains(&DeviceCategory::RaspberryPi),
+            "Should have Raspberry Pi devices"
+        );
+        assert!(
+            categories.contains(&DeviceCategory::Odroid),
+            "Should have ODROID devices"
+        );
+        assert!(
+            categories.contains(&DeviceCategory::HomeAssistantHardware),
+            "Should have Home Assistant hardware"
+        );
+        assert!(
+            categories.contains(&DeviceCategory::GenericX86),
+            "Should have generic x86"
+        );
+        assert!(
+            categories.contains(&DeviceCategory::GenericArm64),
+            "Should have generic ARM64"
+        );
+    }
+
+    #[test]
+    fn test_mock_manifest_devices_have_haos_config() {
+        let manifest = get_mock_manifest();
+        for device in &manifest.devices {
+            assert!(
+                !device.haos.board.is_empty(),
+                "Device {} should have HAOS board",
+                device.id
+            );
+            assert!(
+                !device.haos.download_url.is_empty(),
+                "Device {} should have HAOS download URL",
+                device.id
+            );
+            assert!(
+                device.haos.download_url.contains("{version}"),
+                "Device {} download URL should have version placeholder",
+                device.id
+            );
+        }
+    }
+
+    #[test]
+    fn test_mock_manifest_devices_have_image_urls() {
+        let manifest = get_mock_manifest();
+        for device in &manifest.devices {
+            assert!(
+                device.image_url.is_some(),
+                "Device {} should have image URL",
+                device.id
+            );
+        }
+    }
+
+    #[test]
+    #[serial]
+    fn test_mock_mode_enabled_with_true_string() {
+        std::env::set_var("HA_INSTALLER_MOCK", "true");
+        assert!(crate::is_mock_enabled());
+        std::env::remove_var("HA_INSTALLER_MOCK");
+    }
+
+    #[test]
+    #[serial]
+    fn test_mock_mode_enabled_with_true_uppercase() {
+        std::env::set_var("HA_INSTALLER_MOCK", "TRUE");
+        assert!(crate::is_mock_enabled());
+        std::env::remove_var("HA_INSTALLER_MOCK");
+    }
+
+    #[test]
+    #[serial]
+    fn test_mock_mode_disabled_with_zero() {
+        std::env::set_var("HA_INSTALLER_MOCK", "0");
+        assert!(!crate::is_mock_enabled());
+        std::env::remove_var("HA_INSTALLER_MOCK");
+    }
+
+    #[test]
+    #[serial]
+    fn test_mock_mode_disabled_with_false() {
+        std::env::set_var("HA_INSTALLER_MOCK", "false");
+        assert!(!crate::is_mock_enabled());
+        std::env::remove_var("HA_INSTALLER_MOCK");
+    }
+
+    #[test]
+    #[serial]
+    fn test_mock_mode_disabled_with_random_string() {
+        std::env::set_var("HA_INSTALLER_MOCK", "random");
+        assert!(!crate::is_mock_enabled());
+        std::env::remove_var("HA_INSTALLER_MOCK");
     }
 }

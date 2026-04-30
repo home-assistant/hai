@@ -8,7 +8,16 @@ HAI (Home Assistant Installer) is a cross-platform desktop application that simp
 - **Short name**: HAI (also means "Hi!" in Dutch)
 - **Binary name**: `hai`
 
-Built with Tauri (Rust backend + web frontend using Lit and Web Awesome).
+## Architecture
+
+HAI is structured as a Cargo workspace with shared core logic:
+
+| Crate | Description |
+|-------|-------------|
+| **hai-core** | Shared Rust library with all business logic (device enumeration, downloads, flashing, Proxmox/UTM integration) |
+| **hai-desktop** | Tauri desktop app with web frontend (Lit + Web Awesome) - thin wrappers around hai-core |
+
+This architecture enables future additions like a TUI installer for live USB environments while sharing all core logic.
 
 ## Documentation Structure
 

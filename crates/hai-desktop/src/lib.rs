@@ -1,21 +1,16 @@
-mod block_devices;
+//! Home Assistant Installer - Desktop Application
+//!
+//! This crate provides the Tauri desktop application for HAI.
+//! It uses hai-core for business logic and provides Tauri command wrappers.
+
 mod commands;
-mod disk_writer;
-mod download;
-mod mock;
-mod proxmox;
-mod types;
-#[cfg(target_os = "macos")]
-mod utm;
 
 use commands::{
     check_for_updates, check_ha_ready, check_ha_updated, check_utm_status, create_utm_vm,
     download_utm_image, flash_image, get_haos_release, get_mac_architecture, get_manifest,
     get_system_info, get_utm_vm_status, is_mock_mode, list_block_devices, list_utm_vms,
-    resize_utm_vm_disk, start_utm_vm,
-    // Proxmox commands
-    proxmox_connect, proxmox_list_nodes, proxmox_list_storage, proxmox_get_next_vm_id,
-    proxmox_create_vm,
+    proxmox_connect, proxmox_create_vm, proxmox_get_next_vm_id, proxmox_list_nodes,
+    proxmox_list_storage, resize_utm_vm_disk, start_utm_vm,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

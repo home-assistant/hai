@@ -1,0 +1,37 @@
+[package]
+name = "hai-core"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+description = "Core library for Home Assistant Installer"
+
+[features]
+default = ["proxmox", "utm", "mock"]
+proxmox = []
+utm = []
+mock = []
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+reqwest = { workspace = true }
+futures-util = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+xz2 = { workspace = true }
+directories = { workspace = true }
+urlencoding = { workspace = true }
+
+# macOS specific
+[target.'cfg(target_os = "macos")'.dependencies]
+plist = { workspace = true }
+security-framework = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+tempfile = { workspace = true }
+serial_test = { workspace = true }
+mockito = { workspace = true }

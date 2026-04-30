@@ -4,14 +4,18 @@
 
 Testing is split into three layers: Rust unit tests, frontend component tests, and Playwright E2E tests. A mock mode enables testing flows without real hardware.
 
+The workspace architecture allows testing hai-core independently from the Tauri integration, enabling better isolation and faster test cycles.
+
 ---
 
 ## 1. Rust Unit Tests
 
-Test core backend logic in isolation.
+### hai-core Tests
+
+Test core business logic independently of Tauri:
 
 ```rust
-// src-tauri/src/manifest.rs
+// crates/hai-core/src/download.rs
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -44,7 +48,56 @@ mod tests {
 }
 ```
 
-**Run:** `cargo test` in `src-tauri/`
+```rust
+// crates/hai-core/src/devices.rs
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_filter_removable_devices() {
+        let devices = vec![
+            BlockDevice { device_type: DeviceType::SdCard, .. },
+            BlockDevice { device_type: DeviceType::Internal, .. },
+        ];
+        let removable = filter_removable(&devices);
+        assert_eq!(removable.len(), 1);
+    }
+}
+```
+
+### hai-desktop Tests
+
+Test Tauri command wrappers and integration:
+
+```rust
+// crates/hai-desktop/src/commands.rs
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_progress_adapter() {
+        // Test TauriProgressAdapter converts correctly
+    }
+}
+```
+
+### Running Rust Tests
+
+```bash
+# Run all workspace tests
+cargo test --workspace
+
+# Run only hai-core tests
+cargo test -p hai-core
+
+# Run only hai-desktop tests
+cargo test -p hai-desktop
+
+# Run with verbose output
+cargo test --workspace -- --nocapture
+```
 
 ---
 
@@ -270,18 +323,18 @@ export default defineConfig({
 
 Enable testing without real hardware.
 
-```rust
-// src-tauri/src/commands/devices.rs
+### hai-core Mock Support
 
-#[tauri::command]
-pub async fn list_block_devices() -> Result<Vec<BlockDevice>, String> {
-    if std::env::var("HA_INSTALLER_MOCK").is_ok() {
-        return Ok(mock_devices());
-    }
-    real_list_block_devices().await
+Mock functionality lives in hai-core and is controlled via feature flag and environment variable:
+
+```rust
+// crates/hai-core/src/mock.rs
+
+pub fn is_mock_mode() -> bool {
+    std::env::var("HA_INSTALLER_MOCK").is_ok()
 }
 
-fn mock_devices() -> Vec<BlockDevice> {
+pub fn mock_devices() -> Vec<BlockDevice> {
     vec![
         BlockDevice {
             id: "mock-sd-32".into(),
@@ -298,28 +351,67 @@ fn mock_devices() -> Vec<BlockDevice> {
     ]
 }
 
-#[tauri::command]
-pub async fn flash_image(
-    image_path: String,
-    target_device: String,
-    window: tauri::Window,
-) -> Result<(), String> {
-    if std::env::var("HA_INSTALLER_MOCK").is_ok() {
-        return mock_flash(window).await;
+pub async fn mock_flash<C: ProgressCallback>(callback: &C) -> Result<FlashResult> {
+    // Simulate download progress
+    for i in 0..=50 {
+        callback.on_progress(FlashProgress {
+            stage: FlashStage::Downloading,
+            percent: i * 2,
+            bytes_written: 0,
+            total_bytes: 0,
+        });
+        tokio::time::sleep(Duration::from_millis(30)).await;
     }
-    real_flash_image(image_path, target_device, window).await
+
+    // Simulate write progress
+    for i in 0..=50 {
+        callback.on_progress(FlashProgress {
+            stage: FlashStage::Writing,
+            percent: i * 2,
+            bytes_written: (i as u64) * 100_000_000,
+            total_bytes: 5_000_000_000,
+        });
+        tokio::time::sleep(Duration::from_millis(30)).await;
+    }
+
+    Ok(FlashResult { success: true, .. })
+}
+```
+
+### hai-core Device Functions with Mock Support
+
+```rust
+// crates/hai-core/src/devices.rs
+
+pub async fn list_block_devices() -> Result<Vec<BlockDevice>> {
+    if mock::is_mock_mode() {
+        return Ok(mock::mock_devices());
+    }
+    real_list_block_devices().await
+}
+```
+
+### hai-desktop Thin Wrapper
+
+```rust
+// crates/hai-desktop/src/commands.rs
+
+#[tauri::command]
+pub async fn list_block_devices() -> Result<Vec<BlockDevice>, String> {
+    hai_core::devices::list_block_devices()
+        .await
+        .map_err(|e| e.to_string())
 }
 
-async fn mock_flash(window: tauri::Window) -> Result<(), String> {
-    // Simulate download progress
-    for i in 0..=100 {
-        window.emit("flash-progress", FlashProgress {
-            stage: if i < 50 { "downloading" } else { "writing" },
-            percent: i,
-        }).ok();
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    Ok(())
+#[tauri::command]
+pub async fn flash_image(
+    request: FlashRequest,
+    progress: Channel<FlashProgress>,
+) -> Result<FlashResult, String> {
+    let callback = TauriProgressAdapter(progress);
+    hai_core::flash::flash_image(request, &callback)
+        .await
+        .map_err(|e| e.to_string())
 }
 ```
 
@@ -329,13 +421,31 @@ async fn mock_flash(window: tauri::Window) -> Result<(), String> {
 
 ```
 home-assistant-installer/
-├── src-tauri/src/
-│   └── commands.rs             # Contains inline Rust unit tests
+├── Cargo.toml                           # Workspace root
+├── crates/
+│   ├── hai-core/src/
+│   │   ├── devices.rs                   # Contains inline unit tests
+│   │   ├── download.rs                  # Contains inline unit tests
+│   │   ├── flash.rs                     # Contains inline unit tests
+│   │   ├── proxmox.rs                   # Contains inline unit tests
+│   │   ├── utm.rs                       # Contains inline unit tests
+│   │   └── mock.rs                      # Mock data and functions
+│   │
+│   └── hai-desktop/
+│       ├── src/
+│       │   └── commands.rs              # Contains inline unit tests
+│       └── frontend/
+│           └── test/
+│               └── unit/                # Frontend component tests
+│                   ├── option-card.test.ts
+│                   ├── device-card.test.ts
+│                   └── ...
+│
 ├── test/
 │   └── e2e/
-│       ├── navigation.spec.ts  # Basic navigation tests
-│       ├── proxmox-flow.spec.ts # Proxmox VE installation flow
-│       └── utm-flow.spec.ts    # UTM VM creation flow (macOS)
+│       ├── navigation.spec.ts           # Basic navigation tests
+│       ├── proxmox-flow.spec.ts         # Proxmox VE installation flow
+│       └── utm-flow.spec.ts             # UTM VM creation flow (macOS)
 ├── playwright.config.ts
 └── package.json
 ```
@@ -347,16 +457,32 @@ home-assistant-installer/
 ```json
 {
   "scripts": {
-    "test": "npm run test:unit",
-    "test:unit": "web-test-runner",
+    "test": "npm run test:unit && npm run test:rust",
+    "test:rust": "cargo test --workspace",
+    "test:unit": "cd crates/hai-desktop/frontend && web-test-runner",
     "test:e2e": "playwright test"
   }
 }
 ```
 
-### Running Rust Tests
+### Running All Tests
 
 ```bash
-cd src-tauri
-cargo test
+# Run all tests (Rust + Frontend unit + E2E)
+npm test && npm run test:e2e
+
+# Run Rust workspace tests only
+cargo test --workspace
+
+# Run hai-core tests only (faster feedback during development)
+cargo test -p hai-core
+
+# Run frontend unit tests only
+npm run test:unit
+
+# Run E2E tests only
+npm run test:e2e
+
+# Run with mock mode enabled
+HA_INSTALLER_MOCK=1 npm run test:e2e
 ```

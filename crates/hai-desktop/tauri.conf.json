@@ -4,10 +4,16 @@
   "version": "0.1.0",
   "identifier": "org.openhomefoundation.hai",
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": {
+      "script": "npm run dev",
+      "cwd": "../.."
+    },
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist"
+    "beforeBuildCommand": {
+      "script": "npm run build",
+      "cwd": "../.."
+    },
+    "frontendDist": "../../dist"
   },
   "app": {
     "withGlobalTauri": true,

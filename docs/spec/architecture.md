@@ -3,125 +3,212 @@
 ## Tech Stack
 
 - **Framework**: Tauri 2.x
-- **Backend**: Rust
+- **Backend**: Rust (Cargo workspace with hai-core + hai-desktop)
 - **Frontend**: Lit (Web Components) + TypeScript
 - **UI Components**: Web Awesome (the library Home Assistant uses, successor to Shoelace)
 - **Build**: Vite
 
 This stack matches what Home Assistant uses for their frontend, ensuring visual and technical consistency.
 
-## How Tauri Works
+## Workspace Architecture
+
+HAI uses a Cargo workspace to separate concerns and enable code reuse:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Your Desktop App                         │
+│                       HAI Workspace                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │   ┌─────────────────────────────────────────────────────────┐   │
-│   │                    Frontend (Web)                       │   │
+│   │                    hai-core                             │   │
+│   │              (Shared Rust Library)                      │   │
 │   │                                                         │   │
-│   │   HTML + CSS + JavaScript/TypeScript                    │   │
-│   │   Lit components, Web Awesome UI                        │   │
-│   │                                                         │   │
-│   │   This is what users SEE and INTERACT with              │   │
+│   │   • Device enumeration (macOS/Linux/Windows)            │   │
+│   │   • Image download + verification                       │   │
+│   │   • Disk writing + verification                         │   │
+│   │   • Proxmox VE API integration                          │   │
+│   │   • UTM automation (macOS)                              │   │
+│   │   • HA readiness checks                                 │   │
+│   │   • Mock mode support                                   │   │
 │   │                                                         │   │
 │   └─────────────────────────────────────────────────────────┘   │
-│                            │                                    │
-│                            │ invoke('command', args)            │
-│                            ▼                                    │
+│                            ▲                                    │
+│                            │ uses                               │
 │   ┌─────────────────────────────────────────────────────────┐   │
-│   │                    Backend (Rust)                       │   │
+│   │                    hai-desktop                          │   │
+│   │               (Tauri Desktop App)                       │   │
 │   │                                                         │   │
-│   │   System access, disk operations, network calls         │   │
-│   │   Proxmox API, UTM automation, image flashing           │   │
-│   │                                                         │   │
-│   │   This does the HEAVY LIFTING and SYSTEM ACCESS         │   │
+│   │   ┌─────────────────────────────────────────────────┐   │   │
+│   │   │              Frontend (Web)                     │   │   │
+│   │   │    Lit components, Web Awesome UI               │   │   │
+│   │   └─────────────────────────────────────────────────┘   │   │
+│   │                        │                                │   │
+│   │                        │ invoke('command', args)        │   │
+│   │                        ▼                                │   │
+│   │   ┌─────────────────────────────────────────────────┐   │   │
+│   │   │         Tauri Commands (Thin Wrappers)          │   │   │
+│   │   │    Adapts hai-core to Tauri IPC channels        │   │   │
+│   │   └─────────────────────────────────────────────────┘   │   │
 │   │                                                         │   │
 │   └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+### Why This Architecture?
+
+1. **Code Reuse**: Core logic can be shared with future TUI installer for live USB
+2. **Better Testing**: hai-core can be tested independently without Tauri
+3. **Cleaner Separation**: Business logic separate from UI framework concerns
+4. **Maintainability**: Fix once in hai-core, benefit everywhere
+
 ## Project Structure
 
 ```
 home-assistant-installer/
+├── Cargo.toml                    # Workspace root
+├── crates/
+│   ├── hai-core/                 # Shared Rust library
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── lib.rs            # Public API exports
+│   │       ├── error.rs          # Unified error types
+│   │       ├── types.rs          # Shared data types
+│   │       ├── devices.rs        # Block device enumeration
+│   │       ├── download.rs       # Image download + verification
+│   │       ├── flash.rs          # Disk writing + verification
+│   │       ├── proxmox.rs        # Proxmox VE API
+│   │       ├── utm.rs            # UTM automation (macOS)
+│   │       ├── network.rs        # HA readiness checks
+│   │       └── mock.rs           # Mock mode support
+│   │
+│   └── hai-desktop/              # Tauri desktop app
+│       ├── Cargo.toml
+│       ├── tauri.conf.json
+│       ├── build.rs
+│       ├── capabilities/
+│       ├── icons/
+│       ├── src/
+│       │   ├── main.rs
+│       │   ├── lib.rs
+│       │   └── commands.rs       # Thin wrappers around hai-core
+│       └── frontend/             # Web UI
+│           ├── package.json
+│           ├── index.html
+│           ├── vite.config.ts
+│           ├── tsconfig.json
+│           └── src/
+│               ├── main.ts
+│               ├── styles.css
+│               ├── state/
+│               │   └── wizard-state.ts
+│               ├── api/
+│               │   ├── commands.ts
+│               │   ├── types.ts
+│               │   ├── mock-data.ts
+│               │   └── index.ts
+│               ├── components/
+│               │   ├── app-shell.ts
+│               │   ├── wizard-shell.ts
+│               │   ├── step-indicator.ts
+│               │   ├── device-card.ts
+│               │   ├── drive-card.ts
+│               │   ├── progress-bar.ts
+│               │   ├── option-card.ts
+│               │   ├── confirm-dialog.ts
+│               │   └── info-dialog.ts
+│               └── views/
+│                   ├── welcome-view.ts
+│                   ├── path-selection-view.ts
+│                   ├── other-options-view.ts
+│                   ├── sbc/
+│                   ├── minipc/
+│                   ├── ha-hardware/
+│                   ├── proxmox/
+│                   └── utm/
+│
+├── docs/
+│   ├── spec/                     # This documentation
+│   └── project.md                # Roadmap
+├── test/
+│   ├── unit/                     # Frontend unit tests
+│   └── e2e/                      # Playwright E2E tests
 ├── .github/
 │   └── workflows/
-├── docs/
-│   ├── spec/                   # This documentation
-│   └── project.md              # Roadmap
-├── src/                        # Frontend (TypeScript/Lit)
-│   ├── main.ts
-│   ├── state/
-│   │   └── wizard-state.ts
-│   ├── api/
-│   │   ├── commands.ts         # Tauri command wrappers
-│   │   ├── types.ts            # TypeScript interfaces
-│   │   ├── mock-data.ts        # Mock data for testing
-│   │   └── index.ts            # Re-exports
-│   ├── components/
-│   │   ├── app-shell.ts        # Main application shell
-│   │   ├── wizard-shell.ts
-│   │   ├── step-indicator.ts
-│   │   ├── device-card.ts
-│   │   ├── drive-card.ts
-│   │   ├── progress-bar.ts
-│   │   ├── option-card.ts
-│   │   ├── confirm-dialog.ts
-│   │   └── info-dialog.ts
-│   └── views/
-│       ├── welcome-view.ts
-│       ├── path-selection-view.ts
-│       ├── other-options-view.ts
-│       ├── sbc/
-│       │   ├── device-selection-view.ts
-│       │   ├── drive-selection-view.ts
-│       │   ├── confirmation-view.ts
-│       │   ├── progress-view.ts
-│       │   └── success-view.ts
-│       ├── minipc/
-│       │   ├── setup-method-view.ts
-│       │   └── architecture-selection-view.ts
-│       ├── ha-hardware/
-│       │   └── device-selection-view.ts
-│       ├── proxmox/
-│       │   ├── proxmox-connect-view.ts
-│       │   ├── proxmox-configure-view.ts
-│       │   ├── proxmox-confirm-view.ts
-│       │   ├── proxmox-progress-view.ts
-│       │   └── proxmox-success-view.ts
-│       └── utm/
-│           ├── utm-check-view.ts
-│           ├── utm-configure-view.ts
-│           ├── utm-confirm-view.ts
-│           ├── utm-progress-view.ts
-│           └── utm-success-view.ts
-├── src-tauri/                  # Backend (Rust)
-│   ├── src/
-│   │   ├── main.rs
-│   │   ├── lib.rs
-│   │   ├── commands.rs         # Tauri command handlers
-│   │   ├── types.rs            # Shared types
-│   │   ├── block_devices.rs    # Device enumeration
-│   │   ├── disk_writer.rs      # Image writing
-│   │   ├── download.rs         # Image downloads
-│   │   ├── proxmox.rs          # Proxmox API
-│   │   ├── utm.rs              # UTM automation (macOS)
-│   │   └── mock.rs             # Mock mode support
-│   ├── icons/
-│   ├── Cargo.toml
-│   └── tauri.conf.json
-├── test/
-│   └── e2e/
-│       ├── navigation.spec.ts
-│       ├── proxmox-flow.spec.ts
-│       └── utm-flow.spec.ts
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── playwright.config.ts
+├── package.json                  # Root package.json with scripts
+├── playwright.config.ts
+└── ...config files
+```
+
+## hai-core Crate
+
+The shared library containing all business logic.
+
+### Modules
+
+| Module | Description |
+|--------|-------------|
+| `types` | Shared data types (`BlockDevice`, `FlashProgress`, etc.) |
+| `error` | Unified error handling with `thiserror` |
+| `devices` | Platform-specific block device enumeration |
+| `download` | Image download, verification, extraction, caching |
+| `flash` | Disk writing with progress and verification |
+| `proxmox` | Proxmox VE API client |
+| `utm` | UTM automation via AppleScript (macOS) |
+| `network` | Connectivity and HA readiness checks |
+| `mock` | Mock data for testing |
+
+### Progress Callback Trait
+
+Core uses a generic trait for progress reporting instead of Tauri-specific channels:
+
+```rust
+pub trait ProgressCallback: Send + Sync {
+    fn on_progress(&self, progress: FlashProgress);
+}
+
+// Works with closures
+impl<F> ProgressCallback for F
+where
+    F: Fn(FlashProgress) + Send + Sync,
+{
+    fn on_progress(&self, progress: FlashProgress) {
+        self(progress);
+    }
+}
+```
+
+This allows hai-desktop to adapt it to Tauri channels, while a future TUI can adapt it to terminal UI updates.
+
+## hai-desktop Crate
+
+The Tauri desktop application with thin command wrappers.
+
+### Command Pattern
+
+Commands are thin wrappers that:
+1. Call hai-core functions
+2. Adapt progress callbacks to Tauri channels
+3. Convert errors to strings for frontend
+
+```rust
+use hai_core::{devices, FlashProgress, ProgressCallback};
+use tauri::ipc::Channel;
+
+struct TauriProgressAdapter(Channel<FlashProgress>);
+
+impl ProgressCallback for TauriProgressAdapter {
+    fn on_progress(&self, progress: FlashProgress) {
+        self.0.send(progress).ok();
+    }
+}
+
+#[tauri::command]
+pub async fn list_block_devices() -> Result<Vec<BlockDevice>, String> {
+    hai_core::devices::list_block_devices()
+        .await
+        .map_err(|e| e.to_string())
+}
 ```
 
 ## Project Configuration

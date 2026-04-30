@@ -1,0 +1,56 @@
+[workspace]
+resolver = "2"
+members = ["crates/hai-core", "crates/hai-desktop"]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["Open Home Foundation"]
+license = "Apache-2.0"
+edition = "2021"
+
+[workspace.dependencies]
+# Internal crates
+hai-core = { path = "crates/hai-core" }
+
+# Async runtime
+tokio = { version = "1", features = ["time", "fs", "io-util", "rt", "macros"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Error handling
+thiserror = "2"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["stream", "json", "multipart"] }
+
+# Async utilities
+futures-util = "0.3"
+
+# Cryptography
+sha2 = "0.10"
+hex = "0.4"
+
+# Compression
+xz2 = "0.1"
+
+# File system
+directories = "5"
+
+# URL encoding
+urlencoding = "2"
+
+# Testing
+tempfile = "3"
+serial_test = "3"
+mockito = "1"
+
+# macOS specific
+plist = "1"
+security-framework = "2"
+
+# Tauri
+tauri = { version = "2", features = [] }
+tauri-build = { version = "2", features = [] }
+tauri-plugin-opener = "2"
