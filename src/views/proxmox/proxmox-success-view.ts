@@ -246,7 +246,7 @@ export class ProxmoxSuccessView extends LitElement {
             <span class="step-number">2</span>
             <span class="step-text">
               Open
-              <a href="${haUrl}" target="_blank"> ${displayUrl} </a>
+              <a href=${haUrl} target="_blank"> ${displayUrl} </a>
               in your browser
             </span>
           </li>

@@ -211,7 +211,9 @@ export class UtmSuccessView extends LitElement {
   render() {
     const vmName =
       (this._wizardState.selections.vmName as string) || "Home Assistant";
-    const ipAddress = this._wizardState.selections.ipAddress as string | undefined;
+    const ipAddress = this._wizardState.selections.ipAddress as
+      | string
+      | undefined;
     const haUrl = ipAddress
       ? `http://${ipAddress}:8123`
       : "http://homeassistant.local:8123";
@@ -233,16 +235,15 @@ export class UtmSuccessView extends LitElement {
           <li class="step-item">
             <span class="step-number">1</span>
             <span class="step-text">
-              Wait a few minutes for Home Assistant to complete its initial setup
+              Wait a few minutes for Home Assistant to complete its initial
+              setup
             </span>
           </li>
           <li class="step-item">
             <span class="step-number">2</span>
             <span class="step-text">
               Open
-              <a href="${haUrl}" target="_blank">
-                ${displayUrl}
-              </a>
+              <a href=${haUrl} target="_blank"> ${displayUrl} </a>
               in your browser
             </span>
           </li>
@@ -256,8 +257,9 @@ export class UtmSuccessView extends LitElement {
       </div>
 
       <div class="tip-section">
-        <strong>Tip:</strong> You can manage your Home Assistant virtual machine anytime by opening UTM.
-        The virtual machine will continue running in the background even after closing this installer.
+        <strong>Tip:</strong> You can manage your Home Assistant virtual machine
+        anytime by opening UTM. The virtual machine will continue running in the
+        background even after closing this installer.
       </div>
 
       <div class="companion-section">

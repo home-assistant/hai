@@ -29,7 +29,14 @@ type InstallStage =
 const MEASURABLE_STAGES: InstallStage[] = ["downloading"];
 
 // Stages that use indeterminate progress (waiting for something, or unknown total size)
-const INDETERMINATE_STAGES: InstallStage[] = ["extracting", "creating", "starting", "waiting", "ready", "updating"];
+const INDETERMINATE_STAGES: InstallStage[] = [
+  "extracting",
+  "creating",
+  "starting",
+  "waiting",
+  "ready",
+  "updating",
+];
 
 @customElement("utm-progress-view")
 export class UtmProgressView extends LitElement {
@@ -479,7 +486,9 @@ export class UtmProgressView extends LitElement {
     } catch (error) {
       this._stage = "error";
       this._error =
-        error instanceof Error ? error.message : "Failed to create virtual machine";
+        error instanceof Error
+          ? error.message
+          : "Failed to create virtual machine";
       this.dispatchEvent(
         new CustomEvent("install-error", {
           bubbles: true,
@@ -591,7 +600,10 @@ export class UtmProgressView extends LitElement {
           } else if (index === currentIndex) {
             stateClass = "active";
           }
-          return html`<div class="stage-dot ${stateClass}" title="${stage.label}"></div>`;
+          return html`<div
+            class="stage-dot ${stateClass}"
+            title=${stage.label}
+          ></div>`;
         })}
       </div>
     `;

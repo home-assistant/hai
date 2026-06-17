@@ -59,7 +59,7 @@ describe("wizard-state", () => {
   });
 
   it("does not go past last step", () => {
-    wizardState.startFlow("vm"); // VM has 3 steps
+    wizardState.startFlow("vm");
     const lastIndex = wizardState.getState().steps.length - 1;
 
     // Go to last step
@@ -79,12 +79,14 @@ describe("wizard-state", () => {
   });
 
   it("tracks isLastStep correctly", () => {
-    wizardState.startFlow("vm"); // VM has 3 steps
+    wizardState.startFlow("vm");
+    const lastIndex = wizardState.getState().steps.length - 1;
     expect(wizardState.isLastStep).to.be.false;
 
     // Go to last step
-    wizardState.nextStep();
-    wizardState.nextStep();
+    for (let i = 0; i < lastIndex; i++) {
+      wizardState.nextStep();
+    }
     expect(wizardState.isLastStep).to.be.true;
   });
 
@@ -112,13 +114,17 @@ describe("wizard-state", () => {
   });
 
   it("calculates progress correctly", () => {
-    wizardState.startFlow("vm"); // 3 steps
-    expect(wizardState.progress).to.be.closeTo(1 / 3, 0.01);
+    wizardState.startFlow("vm");
+    const stepCount = wizardState.getState().steps.length;
+    expect(wizardState.progress).to.be.closeTo(1 / stepCount, 0.01);
 
     wizardState.nextStep();
-    expect(wizardState.progress).to.be.closeTo(2 / 3, 0.01);
+    expect(wizardState.progress).to.be.closeTo(2 / stepCount, 0.01);
 
-    wizardState.nextStep();
+    // Advance to the final step
+    while (!wizardState.isLastStep) {
+      wizardState.nextStep();
+    }
     expect(wizardState.progress).to.equal(1);
   });
 

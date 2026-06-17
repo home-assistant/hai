@@ -280,7 +280,6 @@ export class SuccessView extends LitElement {
           </a>
         </div>
       </div>
-
     `;
   }
 

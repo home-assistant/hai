@@ -276,9 +276,7 @@ export class UtmCheckView extends LitElement {
   render() {
     return html`
       <h2>Virtual Machine Setup</h2>
-      <p class="subtitle">
-        Run Home Assistant in a virtual machine using UTM
-      </p>
+      <p class="subtitle">Run Home Assistant in a virtual machine using UTM</p>
 
       <div class="warning-card">
         <p class="warning-title">Best for Testing & Evaluation</p>
@@ -289,7 +287,9 @@ export class UtmCheckView extends LitElement {
         <ul class="warning-list">
           <li>Your Mac needs to be running and you need to be logged in</li>
           <li>The virtual machine won't start automatically on boot</li>
-          <li>For always-on Home Assistant, dedicated hardware is recommended</li>
+          <li>
+            For always-on Home Assistant, dedicated hardware is recommended
+          </li>
         </ul>
       </div>
 
@@ -353,7 +353,14 @@ export class UtmCheckView extends LitElement {
           </svg>
         </div>
         <div class="status-text">
-          <p class="status-title">UTM is installed${this._utmStatus?.version ? html` <span class="version-info">(v${this._utmStatus.version})</span>` : ""}</p>
+          <p class="status-title">
+            UTM is
+            installed${this._utmStatus?.version
+              ? html` <span class="version-info"
+                  >(v${this._utmStatus.version})</span
+                >`
+              : ""}
+          </p>
           <p class="status-description">
             Ready to create a Home Assistant virtual machine
           </p>

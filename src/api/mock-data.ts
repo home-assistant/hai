@@ -1,4 +1,9 @@
-import type { BlockDevice, DeviceManifest, HaosRelease, UpdateInfo } from "./types.js";
+import type {
+  BlockDevice,
+  DeviceManifest,
+  HaosRelease,
+  UpdateInfo,
+} from "./types.js";
 
 /**
  * Mock block devices for testing
@@ -236,51 +241,67 @@ export const MOCK_HAOS_RELEASE: HaosRelease = {
   images: [
     {
       board: "rpi5-64",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi5-64-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi5-64-16.3.img.xz",
       size: 331_899_792,
-      sha256: "5ade653232aa1c4504e52b56347b389fb0b24d9edc69134a860edb84f41ea9e9",
+      sha256:
+        "5ade653232aa1c4504e52b56347b389fb0b24d9edc69134a860edb84f41ea9e9",
     },
     {
       board: "rpi4-64",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi4-64-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi4-64-16.3.img.xz",
       size: 322_239_272,
-      sha256: "3ebed523708dc1dad5b5399707ee74d0a54b9604b7d4cae5d591d75c85b35013",
+      sha256:
+        "3ebed523708dc1dad5b5399707ee74d0a54b9604b7d4cae5d591d75c85b35013",
     },
     {
       board: "rpi3-64",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi3-64-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_rpi3-64-16.3.img.xz",
       size: 311_438_560,
-      sha256: "f21d5da83a94a5045d4d36822da77d2bee3539ab5150a7074c562d922f81e0de",
+      sha256:
+        "f21d5da83a94a5045d4d36822da77d2bee3539ab5150a7074c562d922f81e0de",
     },
     {
       board: "odroid-n2",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-n2-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_odroid-n2-16.3.img.xz",
       size: 298_412_092,
-      sha256: "f97b188d9fd2c239269c886e53031ad8bc38828296f1eaede2e89fd4b89207b7",
+      sha256:
+        "f97b188d9fd2c239269c886e53031ad8bc38828296f1eaede2e89fd4b89207b7",
     },
     {
       board: "green",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_green-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_green-16.3.img.xz",
       size: 336_860_104,
-      sha256: "fd41fb3432fb5d64d916b04f6ab18c39824b128fd996d55ea207e393fc65c943",
+      sha256:
+        "fd41fb3432fb5d64d916b04f6ab18c39824b128fd996d55ea207e393fc65c943",
     },
     {
       board: "yellow",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_yellow-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_yellow-16.3.img.xz",
       size: 322_261_788,
-      sha256: "145f252403a00a50391ed4074242e5b770c59477b66f2a2ea33927f68bef0e98",
+      sha256:
+        "145f252403a00a50391ed4074242e5b770c59477b66f2a2ea33927f68bef0e98",
     },
     {
       board: "generic-x86-64",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_generic-x86-64-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_generic-x86-64-16.3.img.xz",
       size: 396_451_208,
-      sha256: "afe591a859a068eb25dcef15be9e7b2236f9c06f515cac3706681db900cb02df",
+      sha256:
+        "afe591a859a068eb25dcef15be9e7b2236f9c06f515cac3706681db900cb02df",
     },
     {
       board: "generic-aarch64",
-      download_url: "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_generic-aarch64-16.3.img.xz",
+      download_url:
+        "https://github.com/home-assistant/operating-system/releases/download/16.3/haos_generic-aarch64-16.3.img.xz",
       size: 341_537_340,
-      sha256: "4769532f71886f8b41c4520b3c0c8f974f5bbf583782a2dc7b16a8e2743315ed",
+      sha256:
+        "4769532f71886f8b41c4520b3c0c8f974f5bbf583782a2dc7b16a8e2743315ed",
     },
   ],
 };

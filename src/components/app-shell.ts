@@ -36,7 +36,11 @@ import {
 
 import { openUrl } from "@tauri-apps/plugin-opener";
 
-export type ViewName = "welcome" | "path-selection" | "other-options" | "wizard";
+export type ViewName =
+  | "welcome"
+  | "path-selection"
+  | "other-options"
+  | "wizard";
 
 @customElement("app-shell")
 export class AppShell extends LitElement {
@@ -201,8 +205,12 @@ export class AppShell extends LitElement {
     // Determine when to hide footer (during active processes)
     const hideFooter =
       (currentStep?.id === "flash" && !this._flashError) ||
-      (flow === "vm" && currentStep?.id === "install" && !this._utmInstallError) ||
-      (flow === "proxmox" && currentStep?.id === "install" && !this._proxmoxInstallError);
+      (flow === "vm" &&
+        currentStep?.id === "install" &&
+        !this._utmInstallError) ||
+      (flow === "proxmox" &&
+        currentStep?.id === "install" &&
+        !this._proxmoxInstallError);
 
     // Determine when to hide back button
     const hideBack =
@@ -235,7 +243,10 @@ export class AppShell extends LitElement {
     if (stepId === "flash" && this._flashError) {
       return "Try Again";
     }
-    if (stepId === "install" && (this._utmInstallError || this._proxmoxInstallError)) {
+    if (
+      stepId === "install" &&
+      (this._utmInstallError || this._proxmoxInstallError)
+    ) {
       return "Try Again";
     }
     if (stepId === "confirm") {
@@ -432,23 +443,31 @@ export class AppShell extends LitElement {
     }
 
     // Handle retry on UTM install error
-    if (flow === "vm" && currentStep?.id === "install" && this._utmInstallError) {
+    if (
+      flow === "vm" &&
+      currentStep?.id === "install" &&
+      this._utmInstallError
+    ) {
       this._utmInstallError = false;
       const wizardShell = this.shadowRoot?.querySelector("wizard-shell");
-      const utmProgressView = wizardShell?.querySelector("utm-progress-view") as
-        | (HTMLElement & { retry: () => void })
-        | null;
+      const utmProgressView = wizardShell?.querySelector(
+        "utm-progress-view"
+      ) as (HTMLElement & { retry: () => void }) | null;
       utmProgressView?.retry();
       return;
     }
 
     // Handle retry on Proxmox install error
-    if (flow === "proxmox" && currentStep?.id === "install" && this._proxmoxInstallError) {
+    if (
+      flow === "proxmox" &&
+      currentStep?.id === "install" &&
+      this._proxmoxInstallError
+    ) {
       this._proxmoxInstallError = false;
       const wizardShell = this.shadowRoot?.querySelector("wizard-shell");
-      const proxmoxProgressView = wizardShell?.querySelector("proxmox-progress-view") as
-        | (HTMLElement & { retry: () => void })
-        | null;
+      const proxmoxProgressView = wizardShell?.querySelector(
+        "proxmox-progress-view"
+      ) as (HTMLElement & { retry: () => void }) | null;
       proxmoxProgressView?.retry();
       return;
     }
@@ -473,7 +492,10 @@ export class AppShell extends LitElement {
     }
 
     // Show confirmation dialog before proceeding from confirm step (only for SBC/minipc flows)
-    if (currentStep?.id === "confirm" && (flow === "sbc" || flow === "minipc")) {
+    if (
+      currentStep?.id === "confirm" &&
+      (flow === "sbc" || flow === "minipc")
+    ) {
       this._showConfirmDialog = true;
       return;
     }

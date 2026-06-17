@@ -199,9 +199,11 @@ export class ConfirmationView extends LitElement {
           <div class="icon-container">
             ${deviceImage
               ? html`<img
-                  class="${deviceImage.endsWith('.svg') ? 'device-icon' : 'device-image'}"
-                  src="${deviceImage}"
-                  alt="${deviceName}"
+                  class=${deviceImage.endsWith(".svg")
+                    ? "device-icon"
+                    : "device-image"}
+                  src=${deviceImage}
+                  alt=${deviceName}
                 />`
               : html`<div class="device-image-placeholder">
                   ${this._renderBoardIcon()}
@@ -211,9 +213,7 @@ export class ConfirmationView extends LitElement {
             <p class="summary-label">Device</p>
             <p class="summary-value">${deviceName}</p>
             ${deviceConfig
-              ? html`<p class="summary-detail">
-                  Board: ${deviceConfig.board}
-                </p>`
+              ? html`<p class="summary-detail">Board: ${deviceConfig.board}</p>`
               : ""}
           </div>
         </div>
@@ -238,7 +238,9 @@ export class ConfirmationView extends LitElement {
           <div class="summary-info">
             <p class="summary-label">Home Assistant Operating System</p>
             <p class="summary-value">
-              ${this._haosVersion ? `Version ${this._haosVersion}` : "Loading..."}
+              ${this._haosVersion
+                ? `Version ${this._haosVersion}`
+                : "Loading..."}
             </p>
             <p class="summary-detail">Latest stable release</p>
           </div>

@@ -1,7 +1,11 @@
 import { LitElement, html, css, svg } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { wizardState, type WizardState } from "../../state/wizard-state.js";
-import { flashImage, formatBytes, type FlashProgress } from "../../api/index.js";
+import {
+  flashImage,
+  formatBytes,
+  type FlashProgress,
+} from "../../api/index.js";
 import "../../components/progress-bar.js";
 
 @customElement("progress-view")
@@ -183,7 +187,8 @@ export class ProgressView extends LitElement {
     }
 
     @keyframes pulse-dot {
-      0%, 100% {
+      0%,
+      100% {
         background-color: var(--ha-primary-color, #03a9f4);
       }
       50% {
@@ -363,7 +368,9 @@ export class ProgressView extends LitElement {
 
     const selections = this._wizardState.selections;
     const driveId = selections.drive as string;
-    const deviceConfig = selections.deviceConfig as { board: string } | undefined;
+    const deviceConfig = selections.deviceConfig as
+      | { board: string }
+      | undefined;
 
     if (!driveId || !deviceConfig) {
       this._error = "Missing drive or device configuration";
@@ -400,11 +407,12 @@ export class ProgressView extends LitElement {
       }
     } catch (err) {
       // Tauri invoke errors come as strings, not Error objects
-      const errorMessage = typeof err === "string"
-        ? err
-        : err instanceof Error
-          ? err.message
-          : "An unexpected error occurred";
+      const errorMessage =
+        typeof err === "string"
+          ? err
+          : err instanceof Error
+            ? err.message
+            : "An unexpected error occurred";
       this._setError(errorMessage);
     } finally {
       this._isFlashing = false;
@@ -414,7 +422,8 @@ export class ProgressView extends LitElement {
   private _setError(message: string) {
     // Provide user-friendly messages for specific error types
     if (message.toLowerCase().includes("disconnected")) {
-      this._error = "The storage device was disconnected during the installation. Please reconnect it and try again.";
+      this._error =
+        "The storage device was disconnected during the installation. Please reconnect it and try again.";
     } else {
       this._error = message;
     }
@@ -467,20 +476,41 @@ export class ProgressView extends LitElement {
       </div>
 
       <h2>${description}</h2>
-      <p class="stage-description">Please keep this window open during installation</p>
+      <p class="stage-description">
+        Please keep this window open during installation
+      </p>
 
       ${this._renderStagesIndicator(stage)}
 
       <div class="progress-section">
-        <progress-bar .progress=${percentage} ?indeterminate=${isIndeterminate}></progress-bar>
+        <progress-bar
+          .progress=${percentage}
+          ?indeterminate=${isIndeterminate}
+        ></progress-bar>
         <div class="progress-details">
           <div class="progress-left">
-            <span class="bytes-info">${isIndeterminate ? formatBytes(bytesProcessed) : (totalBytes > 0 ? `${formatBytes(bytesProcessed)} / ${formatBytes(totalBytes)}` : "")}</span>
-            <span class="speed">${totalBytes > 0 ? this._calculateSpeed() : ""}</span>
+            <span class="bytes-info"
+              >${isIndeterminate
+                ? formatBytes(bytesProcessed)
+                : totalBytes > 0
+                  ? `${formatBytes(bytesProcessed)} / ${formatBytes(totalBytes)}`
+                  : ""}</span
+            >
+            <span class="speed"
+              >${totalBytes > 0 ? this._calculateSpeed() : ""}</span
+            >
           </div>
           <div class="progress-right">
-            <span class="percentage">${isIndeterminate ? "" : `${percentage}%`}</span>
-            <span class="eta">${totalBytes > 0 ? (eta ? `${eta} remaining` : "Calculating...") : ""}</span>
+            <span class="percentage"
+              >${isIndeterminate ? "" : `${percentage}%`}</span
+            >
+            <span class="eta"
+              >${totalBytes > 0
+                ? eta
+                  ? `${eta} remaining`
+                  : "Calculating..."
+                : ""}</span
+            >
           </div>
         </div>
       </div>
@@ -489,9 +519,7 @@ export class ProgressView extends LitElement {
 
   private _renderError() {
     return html`
-      <div class="mascot-container">
-        ${this._renderCasitaSad()}
-      </div>
+      <div class="mascot-container">${this._renderCasitaSad()}</div>
 
       <h2>Installation failed</h2>
 
@@ -500,7 +528,13 @@ export class ProgressView extends LitElement {
   }
 
   private _renderStagesIndicator(currentStage: string) {
-    const stages = ["downloading", "extracting", "writing", "verifying", "finalizing"];
+    const stages = [
+      "downloading",
+      "extracting",
+      "writing",
+      "verifying",
+      "finalizing",
+    ];
     const currentIndex = stages.indexOf(currentStage);
     const isComplete = currentStage === "complete";
     const isError = currentStage === "error";

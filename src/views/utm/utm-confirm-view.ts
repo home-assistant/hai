@@ -162,7 +162,9 @@ export class UtmConfirmView extends LitElement {
 
     return html`
       <h2>Ready to install</h2>
-      <p class="subtitle">Review your virtual machine configuration before installing</p>
+      <p class="subtitle">
+        Review your virtual machine configuration before installing
+      </p>
 
       <div class="summary-card">
         <!-- VM Configuration -->
@@ -197,7 +199,9 @@ export class UtmConfirmView extends LitElement {
           <div class="summary-info">
             <p class="summary-label">Home Assistant Operating System</p>
             <p class="summary-value">
-              ${this._haosVersion ? `Version ${this._haosVersion}` : "Loading..."}
+              ${this._haosVersion
+                ? `Version ${this._haosVersion}`
+                : "Loading..."}
             </p>
             <p class="summary-detail">Latest stable release</p>
           </div>

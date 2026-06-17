@@ -103,11 +103,11 @@ export class StepIndicator extends LitElement {
     return html`
       <div class="step">
         <span
-          class="step-dot ${isActive ? "active" : ""} ${isCompleted ? "completed" : ""}"
+          class="step-dot ${isActive ? "active" : ""} ${isCompleted
+            ? "completed"
+            : ""}"
         ></span>
-        <span
-          class="step-label ${isActive ? "active" : ""}"
-        >
+        <span class="step-label ${isActive ? "active" : ""}">
           ${step.title}
         </span>
       </div>

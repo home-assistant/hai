@@ -84,7 +84,7 @@ describe("drive-card", () => {
     `);
 
     const details = el.shadowRoot!.querySelector(".details");
-    expect(details!.textContent).to.equal("Drive is too small");
+    expect(details!.textContent!.trim()).to.equal("Drive is too small");
   });
 
   it("renders SD card icon for sd_card type", async () => {
@@ -147,7 +147,7 @@ describe("drive-card", () => {
     `);
 
     const details = el.shadowRoot!.querySelector(".details");
-    expect(details!.textContent).to.equal("SanDisk Ultra");
+    expect(details!.textContent!.trim()).to.equal("SanDisk Ultra");
   });
 
   it("displays type label when vendor/model not provided", async () => {
@@ -156,7 +156,7 @@ describe("drive-card", () => {
     `);
 
     const details = el.shadowRoot!.querySelector(".details");
-    expect(details!.textContent).to.equal("USB Drive");
+    expect(details!.textContent!.trim()).to.equal("USB Drive");
   });
 
   it("shows description for SD card", async () => {

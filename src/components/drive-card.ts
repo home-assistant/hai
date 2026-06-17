@@ -168,17 +168,21 @@ export class DriveCard extends LitElement {
       .join(" ");
 
     return html`
-      <div class="${classes}">
+      <div class=${classes}>
         <div class="icon-container">${this._renderIcon()}</div>
         <div class="info">
           <p class="name">${this.name}</p>
-          <p class="details">${this.disabled && this.disabledReason ? this.disabledReason : this._getDetails()}</p>
-          ${!this.disabled ? html`<p class="description">${this._getDescription()}</p>` : ""}
+          <p class="details">
+            ${this.disabled && this.disabledReason
+              ? this.disabledReason
+              : this._getDetails()}
+          </p>
+          ${!this.disabled
+            ? html`<p class="description">${this._getDescription()}</p>`
+            : ""}
         </div>
         <span class="size">${this._formatSize(this.size)}</span>
-        ${this.selected
-          ? html`<span class="selected-indicator">✓</span>`
-          : ""}
+        ${this.selected ? html`<span class="selected-indicator">✓</span>` : ""}
       </div>
     `;
   }

@@ -254,8 +254,8 @@ export class DriveSelectionView extends LitElement {
     // Mini PC flow requires 16GB minimum (NVMe/SSD)
     // SBC flow requires 2GB minimum (SD card)
     return this._isMiniPCFlow()
-      ? 16 * 1000 * 1000 * 1000  // 16 GB
-      : 2 * 1000 * 1000 * 1000;   // 2 GB
+      ? 16 * 1000 * 1000 * 1000 // 16 GB
+      : 2 * 1000 * 1000 * 1000; // 2 GB
   }
 
   render() {
@@ -271,8 +271,9 @@ export class DriveSelectionView extends LitElement {
       <div class="warning">
         <span class="warning-icon">⚠️</span>
         <p class="warning-text">
-          <strong>Warning:</strong> All data on the selected drive will be permanently erased.
-          Make sure you have backed up any important files before proceeding.
+          <strong>Warning:</strong> All data on the selected drive will be
+          permanently erased. Make sure you have backed up any important files
+          before proceeding.
         </p>
       </div>
 
@@ -311,13 +312,13 @@ export class DriveSelectionView extends LitElement {
         <div class="empty-state">
           <span class="empty-icon">
             <svg viewBox="0 0 24 24">
-              <path d="M18,8H16V4H18M15,8H13V4H15M12,8H10V4H12M18,2H10L4,8V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V4A2,2 0 0,0 18,2Z" />
+              <path
+                d="M18,8H16V4H18M15,8H13V4H15M12,8H10V4H12M18,2H10L4,8V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V4A2,2 0 0,0 18,2Z"
+              />
             </svg>
           </span>
           <p class="empty-title">No drives found</p>
-          <p class="empty-text">
-            ${emptyText}
-          </p>
+          <p class="empty-text">${emptyText}</p>
           <button
             class="refresh-button"
             @click=${this._loadDrives}
@@ -369,7 +370,9 @@ export class DriveSelectionView extends LitElement {
                 .vendor=${drive.vendor || ""}
                 .selected=${this._selectedDriveId === drive.id}
                 .disabled=${tooSmall}
-                .disabledReason=${tooSmall ? `⚠ Minimum ${minSizeGB} GB required` : ""}
+                .disabledReason=${tooSmall
+                  ? `⚠ Minimum ${minSizeGB} GB required`
+                  : ""}
                 @click=${() => !tooSmall && this._onSelectDrive(drive)}
               ></drive-card>
             `;

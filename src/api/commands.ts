@@ -115,16 +115,64 @@ async function simulateFlashProgress(
     steps: number;
     delay: number;
   }> = [
-    { stage: "downloading", message: "Downloading image...", weight: 30, totalBytes: compressedSize, showBytes: true, steps: 30, delay: 150 },
-    { stage: "extracting", message: "Extracting image...", weight: 10, totalBytes: 0, showBytes: false, steps: 10, delay: 100 },
-    { stage: "writing", message: "Writing to device...", weight: 35, totalBytes: extractedSize, showBytes: true, steps: 35, delay: 175 },
-    { stage: "verifying", message: "Verifying written data...", weight: 15, totalBytes: extractedSize, showBytes: true, steps: 15, delay: 150 },
-    { stage: "finalizing", message: "Finalizing...", weight: 10, totalBytes: 0, showBytes: false, steps: 10, delay: 100 },
+    {
+      stage: "downloading",
+      message: "Downloading image...",
+      weight: 30,
+      totalBytes: compressedSize,
+      showBytes: true,
+      steps: 30,
+      delay: 150,
+    },
+    {
+      stage: "extracting",
+      message: "Extracting image...",
+      weight: 10,
+      totalBytes: 0,
+      showBytes: false,
+      steps: 10,
+      delay: 100,
+    },
+    {
+      stage: "writing",
+      message: "Writing to device...",
+      weight: 35,
+      totalBytes: extractedSize,
+      showBytes: true,
+      steps: 35,
+      delay: 175,
+    },
+    {
+      stage: "verifying",
+      message: "Verifying written data...",
+      weight: 15,
+      totalBytes: extractedSize,
+      showBytes: true,
+      steps: 15,
+      delay: 150,
+    },
+    {
+      stage: "finalizing",
+      message: "Finalizing...",
+      weight: 10,
+      totalBytes: 0,
+      showBytes: false,
+      steps: 10,
+      delay: 100,
+    },
   ];
 
   let overallProgress = 0;
 
-  for (const { stage, message, weight, totalBytes, showBytes, steps, delay } of stages) {
+  for (const {
+    stage,
+    message,
+    weight,
+    totalBytes,
+    showBytes,
+    steps,
+    delay,
+  } of stages) {
     for (let step = 0; step <= steps; step++) {
       const stageProgress = (step * 100) / steps;
       const progress = overallProgress + (stageProgress * weight) / 100;
@@ -132,7 +180,9 @@ async function simulateFlashProgress(
       onProgress({
         stage,
         progress: Math.round(progress),
-        bytes_processed: showBytes ? Math.round((totalBytes * stageProgress) / 100) : 0,
+        bytes_processed: showBytes
+          ? Math.round((totalBytes * stageProgress) / 100)
+          : 0,
         total_bytes: showBytes ? totalBytes : 0,
         message,
       });
@@ -272,8 +322,18 @@ async function simulateUtmDownload(
     steps: number;
     delay: number;
   }> = [
-    { stage: "downloading", message: "Downloading HAOS image...", steps: 20, delay: 100 },
-    { stage: "extracting", message: "Extracting image...", steps: 10, delay: 100 },
+    {
+      stage: "downloading",
+      message: "Downloading HAOS image...",
+      steps: 20,
+      delay: 100,
+    },
+    {
+      stage: "extracting",
+      message: "Extracting image...",
+      steps: 10,
+      delay: 100,
+    },
   ];
 
   let overallProgress = 0;
@@ -350,7 +410,10 @@ export async function startUtmVm(vmId: string): Promise<void> {
  * @param vmId The VM ID
  * @param sizeGb The target disk size in GB
  */
-export async function resizeUtmVmDisk(vmId: string, sizeGb: number): Promise<void> {
+export async function resizeUtmVmDisk(
+  vmId: string,
+  sizeGb: number
+): Promise<void> {
   if (isBrowserOnly()) {
     await new Promise((resolve) => setTimeout(resolve, 200));
     return;
@@ -565,11 +628,41 @@ async function simulateProxmoxInstall(
     steps: number;
     delay: number;
   }> = [
-    { stage: "downloading", message: "Downloading HAOS image...", weight: 40, steps: 40, delay: 100 },
-    { stage: "extracting", message: "Uploading to Proxmox...", weight: 25, steps: 25, delay: 80 },
-    { stage: "writing", message: "Creating virtual machine...", weight: 20, steps: 20, delay: 100 },
-    { stage: "verifying", message: "Starting Home Assistant OS...", weight: 10, steps: 10, delay: 150 },
-    { stage: "finalizing", message: "Waiting for network...", weight: 5, steps: 10, delay: 200 },
+    {
+      stage: "downloading",
+      message: "Downloading HAOS image...",
+      weight: 40,
+      steps: 40,
+      delay: 100,
+    },
+    {
+      stage: "extracting",
+      message: "Uploading to Proxmox...",
+      weight: 25,
+      steps: 25,
+      delay: 80,
+    },
+    {
+      stage: "writing",
+      message: "Creating virtual machine...",
+      weight: 20,
+      steps: 20,
+      delay: 100,
+    },
+    {
+      stage: "verifying",
+      message: "Starting Home Assistant OS...",
+      weight: 10,
+      steps: 10,
+      delay: 150,
+    },
+    {
+      stage: "finalizing",
+      message: "Waiting for network...",
+      weight: 5,
+      steps: 10,
+      delay: 200,
+    },
   ];
 
   let overallProgress = 0;

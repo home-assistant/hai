@@ -171,7 +171,8 @@ export class ProxmoxConnectView extends LitElement {
         return false;
       }
     } catch {
-      this._error = "Please enter a valid URL (e.g., https://192.168.1.100:8006)";
+      this._error =
+        "Please enter a valid URL (e.g., https://192.168.1.100:8006)";
       return false;
     }
 
@@ -275,7 +276,9 @@ export class ProxmoxConnectView extends LitElement {
             placeholder="https://192.168.1.100:8006"
             ?disabled=${this._connecting}
           />
-          <p class="form-hint">Full URL to your Proxmox server (e.g., https://192.168.1.100:8006)</p>
+          <p class="form-hint">
+            Full URL to your Proxmox server (e.g., https://192.168.1.100:8006)
+          </p>
         </div>
 
         <div class="form-group">
@@ -290,7 +293,9 @@ export class ProxmoxConnectView extends LitElement {
             placeholder="root@pam"
             ?disabled=${this._connecting}
           />
-          <p class="form-hint">Usually root@pam for the default admin account</p>
+          <p class="form-hint">
+            Usually root@pam for the default admin account
+          </p>
         </div>
 
         <div class="form-group">

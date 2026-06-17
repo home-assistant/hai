@@ -272,9 +272,7 @@ export class MiniPCArchitectureSelectionView extends LitElement {
 
     return html`
       <h2>Select your architecture</h2>
-      <p class="subtitle">
-        Choose the CPU architecture of your mini PC.
-      </p>
+      <p class="subtitle">Choose the CPU architecture of your mini PC.</p>
 
       <div class="options">
         ${this._x86Device

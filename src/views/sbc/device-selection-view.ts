@@ -165,7 +165,9 @@ export class DeviceSelectionView extends LitElement {
 
     return html`
       <h2>Select your device</h2>
-      <p class="subtitle">Choose the single board computer you want to install Home Assistant on</p>
+      <p class="subtitle">
+        Choose the single board computer you want to install Home Assistant on
+      </p>
 
       <div class="devices-grid">
         ${this._devices.map(

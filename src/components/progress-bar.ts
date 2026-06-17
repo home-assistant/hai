@@ -59,12 +59,16 @@ export class ProgressBar extends LitElement {
   error = false;
 
   render() {
-    const width = this.indeterminate ? 30 : Math.min(100, Math.max(0, this.progress));
+    const width = this.indeterminate
+      ? 30
+      : Math.min(100, Math.max(0, this.progress));
 
     return html`
       <div class="progress-container">
         <div
-          class="progress-fill ${this.error ? "error" : ""} ${this.indeterminate ? "indeterminate" : ""}"
+          class="progress-fill ${this.error ? "error" : ""} ${this.indeterminate
+            ? "indeterminate"
+            : ""}"
           style="width: ${width}%"
         ></div>
       </div>

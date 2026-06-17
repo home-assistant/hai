@@ -3,6 +3,7 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import litPlugin from "eslint-plugin-lit";
 import prettierConfig from "eslint-config-prettier";
+import globals from "globals";
 
 export default [
   eslint.configs.recommended,
@@ -16,12 +17,7 @@ export default [
         sourceType: "module",
       },
       globals: {
-        window: "readonly",
-        document: "readonly",
-        console: "readonly",
-        HTMLElement: "readonly",
-        HTMLInputElement: "readonly",
-        CustomEvent: "readonly",
+        ...globals.browser,
       },
     },
     plugins: {

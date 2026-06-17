@@ -108,9 +108,7 @@ export class PathSelectionView extends LitElement {
 
       <div class="content">
         <h1>What would you like to install on?</h1>
-        <p class="subtitle">
-          Select how you want to run Home Assistant
-        </p>
+        <p class="subtitle">Select how you want to run Home Assistant</p>
 
         <div class="options-grid">
           <option-card

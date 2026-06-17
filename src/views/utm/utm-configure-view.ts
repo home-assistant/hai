@@ -297,8 +297,10 @@ export class UtmConfigureView extends LitElement {
     // Reserve 2GB for host system, offer rest in standard increments
     const availableMemoryMb = maxMemoryMb - 2048;
 
-    const standardOptions = [2048, 4096, 6144, 8192, 12288, 16384, 24576, 32768, 49152, 65536];
-    return standardOptions.filter(mb => mb <= availableMemoryMb);
+    const standardOptions = [
+      2048, 4096, 6144, 8192, 12288, 16384, 24576, 32768, 49152, 65536,
+    ];
+    return standardOptions.filter((mb) => mb <= availableMemoryMb);
   }
 
   private _formatMemory(mb: number): string {
@@ -355,28 +357,46 @@ export class UtmConfigureView extends LitElement {
   // MDI Icons (from https://materialdesignicons.com/)
   private _renderLabelIcon() {
     // mdi:label-outline
-    return html`<svg viewBox="0 0 24 24"><path d="M16,17H5V7H16L19.55,12M17.63,5.84C17.27,5.33 16.67,5 16,5H5A2,2 0 0,0 3,7V17A2,2 0 0,0 5,19H16C16.67,19 17.27,18.66 17.63,18.15L22,12L17.63,5.84Z"/></svg>`;
+    return html`<svg viewBox="0 0 24 24">
+      <path
+        d="M16,17H5V7H16L19.55,12M17.63,5.84C17.27,5.33 16.67,5 16,5H5A2,2 0 0,0 3,7V17A2,2 0 0,0 5,19H16C16.67,19 17.27,18.66 17.63,18.15L22,12L17.63,5.84Z"
+      />
+    </svg>`;
   }
 
   private _renderCpuIcon() {
     // mdi:chip
-    return html`<svg viewBox="0 0 24 24"><path d="M6,4H18V5H21V7H18V9H21V11H18V13H21V15H18V17H21V19H18V20H6V19H3V17H6V15H3V13H6V11H3V9H6V7H3V5H6V4M11,15V18H12V15H11M13,15V18H14V15H13M15,15V18H16V15H15Z"/></svg>`;
+    return html`<svg viewBox="0 0 24 24">
+      <path
+        d="M6,4H18V5H21V7H18V9H21V11H18V13H21V15H18V17H21V19H18V20H6V19H3V17H6V15H3V13H6V11H3V9H6V7H3V5H6V4M11,15V18H12V15H11M13,15V18H14V15H13M15,15V18H16V15H15Z"
+      />
+    </svg>`;
   }
 
   private _renderMemoryIcon() {
     // mdi:memory
-    return html`<svg viewBox="0 0 24 24"><path d="M17,17H7V7H17M21,11V9H19V7C19,5.89 18.1,5 17,5H15V3H13V5H11V3H9V5H7C5.89,5 5,5.89 5,7V9H3V11H5V13H3V15H5V17A2,2 0 0,0 7,19H9V21H11V19H13V21H15V19H17A2,2 0 0,0 19,17V15H21V13H19V11M13,13H11V11H13M15,9H9V15H15V9Z"/></svg>`;
+    return html`<svg viewBox="0 0 24 24">
+      <path
+        d="M17,17H7V7H17M21,11V9H19V7C19,5.89 18.1,5 17,5H15V3H13V5H11V3H9V5H7C5.89,5 5,5.89 5,7V9H3V11H5V13H3V15H5V17A2,2 0 0,0 7,19H9V21H11V19H13V21H15V19H17A2,2 0 0,0 19,17V15H21V13H19V11M13,13H11V11H13M15,9H9V15H15V9Z"
+      />
+    </svg>`;
   }
 
   private _renderDiskIcon() {
     // mdi:database
-    return html`<svg viewBox="0 0 24 24"><path d="M12,3C7.58,3 4,4.79 4,7C4,9.21 7.58,11 12,11C16.42,11 20,9.21 20,7C20,4.79 16.42,3 12,3M4,9V12C4,14.21 7.58,16 12,16C16.42,16 20,14.21 20,12V9C20,11.21 16.42,13 12,13C7.58,13 4,11.21 4,9M4,14V17C4,19.21 7.58,21 12,21C16.42,21 20,19.21 20,17V14C20,16.21 16.42,18 12,18C7.58,18 4,16.21 4,14Z"/></svg>`;
+    return html`<svg viewBox="0 0 24 24">
+      <path
+        d="M12,3C7.58,3 4,4.79 4,7C4,9.21 7.58,11 12,11C16.42,11 20,9.21 20,7C20,4.79 16.42,3 12,3M4,9V12C4,14.21 7.58,16 12,16C16.42,16 20,14.21 20,12V9C20,11.21 16.42,13 12,13C7.58,13 4,11.21 4,9M4,14V17C4,19.21 7.58,21 12,21C16.42,21 20,19.21 20,17V14C20,16.21 16.42,18 12,18C7.58,18 4,16.21 4,14Z"
+      />
+    </svg>`;
   }
 
   private _renderTicks(count: number) {
     return html`
       <div class="slider-ticks">
-        ${Array(count).fill(0).map(() => html`<div class="slider-tick"></div>`)}
+        ${Array(count)
+          .fill(0)
+          .map(() => html`<div class="slider-tick"></div>`)}
       </div>
     `;
   }
@@ -406,7 +426,9 @@ export class UtmConfigureView extends LitElement {
               @input=${this._onNameChange}
               placeholder="Home Assistant"
             />
-            <p class="setting-description">Shown in UTM's virtual machine list</p>
+            <p class="setting-description">
+              Shown in UTM's virtual machine list
+            </p>
           </div>
         </div>
 
@@ -421,8 +443,8 @@ export class UtmConfigureView extends LitElement {
             <div class="slider-container">
               <input
                 type="range"
-                min="${coreOptions[0]}"
-                max="${coreOptions[coreOptions.length - 1]}"
+                min=${coreOptions[0]}
+                max=${coreOptions[coreOptions.length - 1]}
                 step="2"
                 .value=${String(this._cpuCores)}
                 @input=${this._onCoresChange}
@@ -439,13 +461,15 @@ export class UtmConfigureView extends LitElement {
           <div class="setting-content">
             <div class="setting-header">
               <span class="setting-label">Memory</span>
-              <span class="setting-value">${this._formatMemory(this._memoryMb)}</span>
+              <span class="setting-value"
+                >${this._formatMemory(this._memoryMb)}</span
+              >
             </div>
             <div class="slider-container">
               <input
                 type="range"
                 min="0"
-                max="${memoryOptions.length - 1}"
+                max=${memoryOptions.length - 1}
                 step="1"
                 .value=${String(memoryIndex >= 0 ? memoryIndex : 1)}
                 @input=${this._onMemoryChange}
@@ -462,13 +486,15 @@ export class UtmConfigureView extends LitElement {
           <div class="setting-content">
             <div class="setting-header">
               <span class="setting-label">Disk Size</span>
-              <span class="setting-value">${this._formatDiskSize(this._diskSizeGb)}</span>
+              <span class="setting-value"
+                >${this._formatDiskSize(this._diskSizeGb)}</span
+              >
             </div>
             <div class="slider-container">
               <input
                 type="range"
                 min="0"
-                max="${diskSizeOptions.length - 1}"
+                max=${diskSizeOptions.length - 1}
                 step="1"
                 .value=${String(diskIndex >= 0 ? diskIndex : 0)}
                 @input=${this._onDiskSizeChange}

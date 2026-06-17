@@ -18,13 +18,15 @@ const OTHER_OPTIONS: OtherOption[] = [
   },
   {
     title: "Synology NAS",
-    description: "Run Home Assistant on your Synology NAS using Virtual Machine Manager",
+    description:
+      "Run Home Assistant on your Synology NAS using Virtual Machine Manager",
     url: "https://www.home-assistant.io/installation/synology",
     icon: "synology",
   },
   {
     title: "QNAP NAS",
-    description: "Run Home Assistant on your QNAP NAS using Virtualization Station",
+    description:
+      "Run Home Assistant on your QNAP NAS using Virtualization Station",
     url: "https://www.home-assistant.io/installation/qnap",
     icon: "qnap",
   },
@@ -36,7 +38,8 @@ const OTHER_OPTIONS: OtherOption[] = [
   },
   {
     title: "Windows Virtual Machine",
-    description: "Run Home Assistant OS in Hyper-V, VirtualBox, or VMware on Windows",
+    description:
+      "Run Home Assistant OS in Hyper-V, VirtualBox, or VMware on Windows",
     url: "https://www.home-assistant.io/installation/windows",
     icon: "windows",
   },
@@ -195,7 +198,6 @@ export class OtherOptionsView extends LitElement {
       font-size: 1.25rem;
       flex-shrink: 0;
     }
-
   `;
 
   render() {
@@ -209,14 +211,17 @@ export class OtherOptionsView extends LitElement {
       <div class="content">
         <h1>Other installation methods</h1>
         <p class="subtitle">
-          These options are not directly supported by this installer, but you can
-          follow our documentation to set them up.
+          These options are not directly supported by this installer, but you
+          can follow our documentation to set them up.
         </p>
 
         <div class="options-list">
           ${OTHER_OPTIONS.map(
             (option) => html`
-              <div class="option-item" @click=${() => this._openLink(option.url)}>
+              <div
+                class="option-item"
+                @click=${() => this._openLink(option.url)}
+              >
                 <div class="option-icon">${this._renderIcon(option.icon)}</div>
                 <div class="option-text">
                   <p class="option-title">${option.title}</p>
@@ -227,7 +232,6 @@ export class OtherOptionsView extends LitElement {
             `
           )}
         </div>
-
       </div>
     `;
   }

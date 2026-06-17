@@ -131,9 +131,7 @@ export class DeviceCard extends LitElement {
           <div class="image-container">${this._renderImage()}</div>
           <p class="name">${this.name}</p>
         </div>
-        ${this.selected
-          ? html`<span class="selected-indicator">✓</span>`
-          : ""}
+        ${this.selected ? html`<span class="selected-indicator">✓</span>` : ""}
       </div>
     `;
   }

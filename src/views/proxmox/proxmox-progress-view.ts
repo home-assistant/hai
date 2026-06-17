@@ -24,7 +24,14 @@ type InstallStage =
 const MEASURABLE_STAGES: InstallStage[] = ["downloading"];
 
 // Stages that use indeterminate progress (waiting for something, or unknown total size)
-const INDETERMINATE_STAGES: InstallStage[] = ["extracting", "writing", "verifying", "finalizing", "ready", "updating"];
+const INDETERMINATE_STAGES: InstallStage[] = [
+  "extracting",
+  "writing",
+  "verifying",
+  "finalizing",
+  "ready",
+  "updating",
+];
 
 @customElement("proxmox-progress-view")
 export class ProxmoxProgressView extends LitElement {
@@ -497,11 +504,15 @@ export class ProxmoxProgressView extends LitElement {
                 : ""}</span
             >
             <span class="speed"
-              >${hasMeasurable && this._totalBytes > 0 ? this._calculateSpeed() : ""}</span
+              >${hasMeasurable && this._totalBytes > 0
+                ? this._calculateSpeed()
+                : ""}</span
             >
           </div>
           <div class="progress-right">
-            <span class="percentage">${hasMeasurable ? `${percentage}%` : ""}</span>
+            <span class="percentage"
+              >${hasMeasurable ? `${percentage}%` : ""}</span
+            >
             <span class="eta"
               >${hasMeasurable && this._totalBytes > 0
                 ? this._calculateEta() || "Calculating..."
@@ -548,7 +559,10 @@ export class ProxmoxProgressView extends LitElement {
           } else if (index === currentIndex) {
             stateClass = "active";
           }
-          return html`<div class="stage-dot ${stateClass}" title="${stage.label}"></div>`;
+          return html`<div
+            class="stage-dot ${stateClass}"
+            title=${stage.label}
+          ></div>`;
         })}
       </div>
     `;
