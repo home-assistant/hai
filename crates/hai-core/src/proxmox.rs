@@ -3075,8 +3075,7 @@ mod tests {
             };
 
             let callback = TestProgressCallback::new();
-            let result =
-                upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
+            let result = upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
 
             assert!(result.is_ok(), "Upload should succeed: {:?}", result.err());
             let filename = result.unwrap();
@@ -3116,8 +3115,7 @@ mod tests {
             };
 
             let callback = TestProgressCallback::new();
-            let result =
-                upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
+            let result = upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
 
             assert!(result.is_err());
             if let Err(Error::ProxmoxApi(msg)) = result {
@@ -3156,8 +3154,7 @@ mod tests {
             };
 
             let callback = TestProgressCallback::new();
-            let result =
-                upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
+            let result = upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
 
             assert!(result.is_err());
             if let Err(Error::ProxmoxApi(msg)) = result {
@@ -3196,8 +3193,7 @@ mod tests {
             };
 
             let callback = TestProgressCallback::new();
-            let result =
-                upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
+            let result = upload_image_to_proxmox(&session, "pve", &temp_file, &callback).await;
 
             assert!(result.is_err());
             if let Err(Error::ProxmoxApi(msg)) = result {
@@ -3221,8 +3217,7 @@ mod tests {
                 csrf_token: "test-csrf".to_string(),
             };
 
-            let nonexistent_file =
-                std::path::PathBuf::from("/nonexistent/path/to/image.qcow2");
+            let nonexistent_file = std::path::PathBuf::from("/nonexistent/path/to/image.qcow2");
 
             let callback = TestProgressCallback::new();
             let result =
@@ -3235,6 +3230,5 @@ mod tests {
                 panic!("Expected ProxmoxApi error");
             }
         }
-
     }
 }
