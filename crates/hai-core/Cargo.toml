@@ -30,6 +30,11 @@ urlencoding = { workspace = true }
 plist = { workspace = true }
 security-framework = { workspace = true }
 
+# Linux specific
+[target.'cfg(target_os = "linux")'.dependencies]
+zbus = { workspace = true }
+libc = { workspace = true }
+
 [dev-dependencies]
 tokio = { workspace = true }
 tempfile = { workspace = true }

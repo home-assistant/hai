@@ -23,6 +23,9 @@ pub enum Error {
     #[error("Permission denied: {0}")]
     PermissionDenied(String),
 
+    #[error("Disk service unavailable: {0}")]
+    DiskServiceUnavailable(String),
+
     #[error("Operation cancelled")]
     Cancelled,
 
@@ -115,6 +118,15 @@ mod tests {
         let msg = error.to_string();
         assert_eq!(msg, "Permission denied: Need root access");
         assert!(msg.contains("Need root access"));
+    }
+
+    #[test]
+    fn test_display_disk_service_unavailable() {
+        let error = Error::DiskServiceUnavailable("udisks2 is not available".to_string());
+        assert_eq!(
+            error.to_string(),
+            "Disk service unavailable: udisks2 is not available"
+        );
     }
 
     #[test]

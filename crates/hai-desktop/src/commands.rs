@@ -199,7 +199,13 @@ pub async fn flash_image(
         &callback,
     )
     .await
-    .map_err(|e| format!("Write failed: {}", e))?;
+    .map_err(|e| match e {
+        // Verify-phase failures are tagged VerificationFailed; the rest are writes.
+        hai_core::Error::VerificationFailed(msg) => format!("Verification failed: {}", msg),
+        // Already carries its own "Disk service unavailable:" prefix.
+        err @ hai_core::Error::DiskServiceUnavailable(_) => err.to_string(),
+        other => format!("Write failed: {}", other),
+    })?;
 
     // Clean up extracted image
     let _ = tokio::fs::remove_file(&extracted_path).await;

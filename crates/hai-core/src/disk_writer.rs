@@ -527,10 +527,14 @@ mod macos {
 #[cfg(target_os = "linux")]
 mod linux {
     use super::*;
+    use std::collections::HashMap;
     use std::fs::File;
-    use std::io::{Read, Write};
+    use std::io::{Read, Seek, SeekFrom, Write};
     use std::process::Command;
     use std::sync::mpsc;
+    use zbus::proxy::CacheProperties;
+    use zbus::zvariant::{OwnedFd, OwnedObjectPath, Value};
+    use zbus::Connection;
 
     /// Progress update sent from blocking task
     struct ProgressUpdate {
@@ -546,7 +550,12 @@ mod linux {
         verify: bool,
         progress_callback: &P,
     ) -> Result<()> {
-        unmount_device(device_id)?;
+        let connection = Connection::system()
+            .await
+            .map_err(|e| map_udisks_error(e, "connecting to the system bus"))?;
+        let block_path = resolve_block_path(&connection, device_id).await?;
+
+        unmount_device(&connection, device_id).await;
 
         let image_size = std::fs::metadata(image_path)?.len();
 
@@ -558,99 +567,52 @@ mod linux {
             message: "Writing image to device...".to_string(),
         });
 
-        // Create channel for progress updates from blocking task
+        // Create channel for progress updates from the blocking task.
         let (progress_tx, progress_rx) = mpsc::channel::<ProgressUpdate>();
 
+        let device = open_device_rw(&connection, &block_path).await?;
         let image_path_clone = image_path.clone();
-        let device_id_clone = device_id.to_string();
 
         let write_handle = tokio::task::spawn_blocking(move || {
-            write_to_device(&image_path_clone, &device_id_clone, image_size, progress_tx)
+            write_and_verify(&image_path_clone, device, image_size, verify, progress_tx)
         });
 
-        // Forward progress updates while waiting for write to complete
+        let forward = |update: ProgressUpdate| {
+            let progress = if update.total_bytes > 0 {
+                ((update.bytes_processed as f64 / update.total_bytes as f64) * 100.0) as u8
+            } else {
+                0
+            };
+            progress_callback.on_progress(FlashProgress {
+                stage: update.stage,
+                progress,
+                bytes_processed: update.bytes_processed,
+                total_bytes: update.total_bytes,
+                message: update.message,
+            });
+        };
+
         loop {
             match progress_rx.recv_timeout(std::time::Duration::from_millis(100)) {
-                Ok(update) => {
-                    let progress = if update.total_bytes > 0 {
-                        ((update.bytes_processed as f64 / update.total_bytes as f64) * 100.0) as u8
-                    } else {
-                        0
-                    };
-                    progress_callback.on_progress(FlashProgress {
-                        stage: update.stage,
-                        progress,
-                        bytes_processed: update.bytes_processed,
-                        total_bytes: update.total_bytes,
-                        message: update.message,
-                    });
-                }
+                Ok(update) => forward(update),
                 Err(mpsc::RecvTimeoutError::Timeout) => {
                     if write_handle.is_finished() {
                         break;
                     }
                 }
-                Err(mpsc::RecvTimeoutError::Disconnected) => {
-                    break;
-                }
+                Err(mpsc::RecvTimeoutError::Disconnected) => break,
             }
+        }
+
+        // Drain updates the task buffered after it finished (e.g. the final
+        // "Write complete" / "Verification complete") so they aren't lost.
+        while let Ok(update) = progress_rx.try_recv() {
+            forward(update);
         }
 
         write_handle
             .await
             .map_err(|e| Error::Io(std::io::Error::other(e)))??;
-
-        if verify {
-            progress_callback.on_progress(FlashProgress {
-                stage: FlashStage::Verifying,
-                progress: 0,
-                bytes_processed: 0,
-                total_bytes: image_size,
-                message: "Verifying written data...".to_string(),
-            });
-
-            let (verify_tx, verify_rx) = mpsc::channel::<ProgressUpdate>();
-
-            let image_path_clone = image_path.clone();
-            let device_id_clone = device_id.to_string();
-
-            let verify_handle = tokio::task::spawn_blocking(move || {
-                verify_write(&image_path_clone, &device_id_clone, image_size, verify_tx)
-            });
-
-            // Forward verify progress updates
-            loop {
-                match verify_rx.recv_timeout(std::time::Duration::from_millis(100)) {
-                    Ok(update) => {
-                        let progress = if update.total_bytes > 0 {
-                            ((update.bytes_processed as f64 / update.total_bytes as f64) * 100.0)
-                                as u8
-                        } else {
-                            0
-                        };
-                        progress_callback.on_progress(FlashProgress {
-                            stage: update.stage,
-                            progress,
-                            bytes_processed: update.bytes_processed,
-                            total_bytes: update.total_bytes,
-                            message: update.message,
-                        });
-                    }
-                    Err(mpsc::RecvTimeoutError::Timeout) => {
-                        if verify_handle.is_finished() {
-                            break;
-                        }
-                    }
-                    Err(mpsc::RecvTimeoutError::Disconnected) => {
-                        break;
-                    }
-                }
-            }
-
-            verify_handle
-                .await
-                .map_err(|e| Error::Io(std::io::Error::other(e)))??;
-        }
 
         progress_callback.on_progress(FlashProgress {
             stage: FlashStage::Finalizing,
@@ -673,44 +635,219 @@ mod linux {
         Ok(())
     }
 
-    fn unmount_device(device_id: &str) -> Result<()> {
-        let _ = Command::new("umount")
-            .args(["--all-targets", device_id])
-            .output();
+    fn map_udisks_error(err: zbus::Error, context: &str) -> Error {
+        // Remedy only; the DiskServiceUnavailable variant supplies the
+        // "Disk service unavailable:" prefix.
+        const UNAVAILABLE: &str = "install and enable udisks2 to flash drives.";
 
-        for i in 1..=16 {
-            let partition = if device_id.contains("mmcblk") || device_id.contains("nvme") {
-                format!("{}p{}", device_id, i)
-            } else {
-                format!("{}{}", device_id, i)
-            };
-            let _ = Command::new("umount").arg(&partition).output();
+        if let zbus::Error::MethodError(name, message, _) = &err {
+            let name = name.as_str();
+            // udisks2 isn't installed / not activatable on the bus.
+            if name.contains("ServiceUnknown") || name.contains("NameHasNoOwner") {
+                return Error::DiskServiceUnavailable(UNAVAILABLE.to_string());
+            }
+            // User dismissed the polkit dialog.
+            if name.contains("NotAuthorizedDismissed") {
+                return Error::PermissionDenied("Authorization was canceled".to_string());
+            }
+            if name.contains("NotAuthorized") {
+                return Error::PermissionDenied(
+                    message
+                        .clone()
+                        .unwrap_or_else(|| "Not authorized to access the device".to_string()),
+                );
+            }
+            // udisks may use the dedicated DeviceBusy name, but often reports a
+            // busy device as Error.Failed with "Device or resource busy" in the
+            // message instead, so check both.
+            if name.contains("DeviceBusy")
+                || message
+                    .as_deref()
+                    .is_some_and(|m| m.contains("Device or resource busy"))
+            {
+                return Error::DeviceBusy(context.to_string());
+            }
+            return Error::PermissionDenied(format!("udisks2 error while {context}: {err}"));
+        }
+
+        // Not a method error → couldn't reach the bus/service at all.
+        Error::DiskServiceUnavailable(format!("{UNAVAILABLE} ({err})"))
+    }
+
+    #[zbus::proxy(
+        interface = "org.freedesktop.UDisks2.Manager",
+        default_service = "org.freedesktop.UDisks2",
+        default_path = "/org/freedesktop/UDisks2/Manager",
+        gen_blocking = false
+    )]
+    trait UDisks2Manager {
+        /// Resolve a device spec like `{"path": "/dev/sdb"}` to block-object paths.
+        fn resolve_device(
+            &self,
+            devspec: HashMap<&str, Value<'_>>,
+            options: HashMap<&str, Value<'_>>,
+        ) -> zbus::Result<Vec<OwnedObjectPath>>;
+    }
+
+    #[zbus::proxy(
+        interface = "org.freedesktop.UDisks2.Block",
+        default_service = "org.freedesktop.UDisks2",
+        gen_blocking = false
+    )]
+    trait UDisks2Block {
+        /// Open the whole device; `mode` is `"r"`, `"w"`, or `"rw"`.
+        fn open_device(
+            &self,
+            mode: &str,
+            options: HashMap<&str, Value<'_>>,
+        ) -> zbus::Result<OwnedFd>;
+    }
+
+    #[zbus::proxy(
+        interface = "org.freedesktop.UDisks2.Filesystem",
+        default_service = "org.freedesktop.UDisks2",
+        gen_blocking = false
+    )]
+    trait UDisks2Filesystem {
+        fn unmount(&self, options: HashMap<&str, Value<'_>>) -> zbus::Result<()>;
+    }
+
+    async fn resolve_block_path(conn: &Connection, device_id: &str) -> Result<OwnedObjectPath> {
+        let manager = UDisks2ManagerProxy::new(conn)
+            .await
+            .map_err(|e| map_udisks_error(e, "connecting to udisks2"))?;
+
+        let mut devspec = HashMap::new();
+        devspec.insert("path", Value::from(device_id));
+
+        let paths = manager
+            .resolve_device(devspec, HashMap::new())
+            .await
+            .map_err(|e| map_udisks_error(e, "resolving the device"))?;
+
+        paths
+            .into_iter()
+            .next()
+            .ok_or_else(|| Error::DeviceNotFound(device_id.to_string()))
+    }
+
+    /// Open the device read-write via udisks2 (raises the polkit prompt).
+    async fn open_device_rw(conn: &Connection, path: &OwnedObjectPath) -> Result<File> {
+        let block = UDisks2BlockProxy::builder(conn)
+            .path(path.to_string())
+            .map_err(|e| map_udisks_error(e, "addressing the device"))?
+            .cache_properties(CacheProperties::No)
+            .build()
+            .await
+            .map_err(|e| map_udisks_error(e, "addressing the device"))?;
+        // O_SYNC so each write reaches the card before returning, instead of
+        // buffering into RAM and stalling on one big flush at the end — keeps
+        // the progress bar tracking real flash speed.
+        let mut options = HashMap::new();
+        options.insert("flags", Value::from(libc::O_SYNC));
+        let fd = block
+            .open_device("rw", options)
+            .await
+            .map_err(|e| map_udisks_error(e, "opening the device"))?;
+        Ok(File::from(std::os::fd::OwnedFd::from(fd)))
+    }
+
+    fn write_and_verify(
+        image_path: &PathBuf,
+        mut device: File,
+        total_size: u64,
+        verify: bool,
+        progress_tx: mpsc::Sender<ProgressUpdate>,
+    ) -> Result<()> {
+        write_to_device(image_path, &mut device, total_size, &progress_tx)?;
+
+        if verify {
+            // Evict the pages we just wrote from the cache so the read-back
+            // comes from the medium, not RAM
+            drop_device_cache(&device);
+
+            // Tag verify-phase failures as VerificationFailed so the caller can
+            // label them "Verification failed" rather than "Write failed".
+            let verified = (|| {
+                device.seek(SeekFrom::Start(0)).map_err(|e| {
+                    if is_drive_disconnected(&e) {
+                        Error::DriveDisconnected
+                    } else {
+                        Error::Io(e)
+                    }
+                })?;
+                verify_write(image_path, &mut device, total_size, &progress_tx)
+            })();
+
+            verified.map_err(|e| match e {
+                Error::VerificationFailed(_) | Error::DriveDisconnected => e,
+                other => Error::VerificationFailed(other.to_string()),
+            })?;
         }
 
         Ok(())
     }
 
+    /// Best-effort: drop the kernel page cache for the whole device so a
+    /// subsequent read-back hits the physical medium instead of the copy we
+    /// just wrote. Failures are advisory and ignored.
+    fn drop_device_cache(device: &File) {
+        use std::os::fd::AsRawFd;
+        // SAFETY: `device` owns the fd and keeps it open for this call. A `len`
+        // of 0 means "to end of file"; the return value is purely advisory.
+        unsafe {
+            libc::posix_fadvise(device.as_raw_fd(), 0, 0, libc::POSIX_FADV_DONTNEED);
+        }
+    }
+
+    /// Block-object names to unmount before writing: the device plus its first
+    /// 16 partitions (`sdb`+`sdb1…`, or `mmcblk0`+`mmcblk0p1…`).
+    fn partition_block_names(device_id: &str) -> Vec<String> {
+        let base = device_id
+            .strip_prefix("/dev/")
+            .unwrap_or(device_id)
+            .to_string();
+        // Names ending in a digit (mmcblk0, nvme0n1, loop0) take a 'p' before the
+        // partition index; sd*/vd* append it directly.
+        let needs_p = base.chars().last().is_some_and(|c| c.is_ascii_digit());
+        let mut names = Vec::with_capacity(17);
+        names.push(base.clone());
+        for i in 1..=16 {
+            names.push(if needs_p {
+                format!("{base}p{i}")
+            } else {
+                format!("{base}{i}")
+            });
+        }
+        names
+    }
+
+    /// Best-effort: unmount failures (not mounted, no fs, unknown object) are
+    /// ignored — we only need the device free before writing.
+    async fn unmount_device(conn: &Connection, device_id: &str) {
+        for name in partition_block_names(device_id) {
+            let object_path = format!("/org/freedesktop/UDisks2/block_devices/{name}");
+            let builder = match UDisks2FilesystemProxy::builder(conn).path(object_path) {
+                Ok(builder) => builder,
+                Err(_) => continue,
+            };
+            let proxy = match builder.cache_properties(CacheProperties::No).build().await {
+                Ok(proxy) => proxy,
+                Err(_) => continue,
+            };
+            let mut options = HashMap::new();
+            options.insert("force", Value::from(true));
+            let _ = proxy.unmount(options).await;
+        }
+    }
+
     fn write_to_device(
         image_path: &PathBuf,
-        device_path: &str,
+        dest: &mut File,
         total_size: u64,
-        progress_tx: mpsc::Sender<ProgressUpdate>,
+        progress_tx: &mpsc::Sender<ProgressUpdate>,
     ) -> Result<()> {
         let mut source = File::open(image_path)?;
-        let mut dest = std::fs::OpenOptions::new()
-            .write(true)
-            .open(device_path)
-            .map_err(|e| {
-                if e.kind() == std::io::ErrorKind::PermissionDenied {
-                    Error::PermissionDenied(
-                        "Root access required. Please run with sudo.".to_string(),
-                    )
-                } else if is_drive_disconnected(&e) {
-                    Error::DriveDisconnected
-                } else {
-                    Error::Io(e)
-                }
-            })?;
 
         let mut buffer = vec![0u8; WRITE_BUFFER_SIZE];
         let mut bytes_written: u64 = 0;
@@ -765,18 +902,11 @@ mod linux {
 
     fn verify_write(
         image_path: &PathBuf,
-        device_path: &str,
+        dest: &mut File,
         total_size: u64,
-        progress_tx: mpsc::Sender<ProgressUpdate>,
+        progress_tx: &mpsc::Sender<ProgressUpdate>,
     ) -> Result<()> {
         let mut source = File::open(image_path)?;
-        let mut dest = File::open(device_path).map_err(|e| {
-            if is_drive_disconnected(&e) {
-                Error::DriveDisconnected
-            } else {
-                Error::Io(e)
-            }
-        })?;
 
         let mut source_buffer = vec![0u8; WRITE_BUFFER_SIZE];
         let mut dest_buffer = vec![0u8; WRITE_BUFFER_SIZE];
@@ -834,11 +964,18 @@ mod linux {
         use super::*;
 
         #[test]
-        fn test_unmount_device_nonexistent() {
-            // Test unmounting a device that doesn't exist
-            let result = unmount_device("/dev/nonexistent999");
-            // Should succeed because we ignore errors from umount
-            assert!(result.is_ok());
+        fn test_partition_block_names_sd() {
+            let names = partition_block_names("/dev/sdb");
+            assert_eq!(names[0], "sdb");
+            assert_eq!(names[1], "sdb1");
+            assert_eq!(names[16], "sdb16");
+        }
+
+        #[test]
+        fn test_partition_block_names_mmcblk_inserts_p() {
+            let names = partition_block_names("/dev/mmcblk0");
+            assert_eq!(names[0], "mmcblk0");
+            assert_eq!(names[1], "mmcblk0p1");
         }
     }
 }
@@ -1535,7 +1672,11 @@ mod tests {
         async fn test_write_image_nonexistent_file() {
             let callback = TestProgressCallback::new();
             let image_path = PathBuf::from("/tmp/nonexistent_image_file.img");
-            let device_id = "/dev/sdb";
+            // Non-resolvable device: write_image now fails at device resolution
+            // before the image is ever opened, so this checks the error path
+            // generically (no real device touched, no polkit prompt) rather than
+            // the missing-file case specifically.
+            let device_id = "/dev/hai-test-nonexistent";
 
             let result = write_image(&image_path, device_id, false, &callback).await;
             assert!(result.is_err());
@@ -1549,8 +1690,8 @@ mod tests {
             std::fs::write(temp_file.path(), b"test data").unwrap();
             let image_path = temp_file.path().to_path_buf();
 
-            // This will fail with permission denied unless running as root
-            let device_id = "/dev/null"; // Use /dev/null as a safe test target
+            // Non-resolvable device: fails before any privileged udisks2 call.
+            let device_id = "/dev/hai-test-nonexistent";
 
             let result = write_image(&image_path, device_id, false, &callback).await;
             // Could be either permission denied or other error
@@ -1663,8 +1804,10 @@ mod tests {
 
         #[cfg(target_os = "macos")]
         let device_id = "/dev/disk2";
+        // Non-resolvable device so write_image fails before any privileged
+        // udisks2 call (mock mode isn't honoured by write_image itself).
         #[cfg(target_os = "linux")]
-        let device_id = "/dev/sdb";
+        let device_id = "/dev/hai-test-nonexistent";
         #[cfg(target_os = "windows")]
         let device_id = "\\\\.\\PhysicalDrive1";
 
@@ -1690,7 +1833,7 @@ mod tests {
         #[cfg(target_os = "macos")]
         let device_id = "/dev/disk99";
         #[cfg(target_os = "linux")]
-        let device_id = "/dev/sdb99";
+        let device_id = "/dev/hai-test-nonexistent";
         #[cfg(target_os = "windows")]
         let device_id = "\\\\.\\PhysicalDrive99";
 
@@ -1914,7 +2057,7 @@ mod tests {
         #[cfg(target_os = "macos")]
         let device_id = "/dev/disk999";
         #[cfg(target_os = "linux")]
-        let device_id = "/dev/sdz99";
+        let device_id = "/dev/hai-test-nonexistent";
         #[cfg(target_os = "windows")]
         let device_id = "\\\\.\\PhysicalDrive999";
 
