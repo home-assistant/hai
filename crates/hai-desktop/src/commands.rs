@@ -60,7 +60,7 @@ pub struct SystemInfo {
 }
 
 /// VM status info returned to frontend
-#[derive(serde::Serialize)]
+#[derive(Debug, serde::Serialize)]
 pub struct VmStatusInfo {
     pub status: String,
     pub ip_address: Option<String>,

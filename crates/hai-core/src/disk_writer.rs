@@ -36,6 +36,8 @@ fn is_drive_disconnected(io_err: &std::io::Error) -> bool {
 
 /// Validate that a device path is safe to write to (not a system drive)
 fn validate_device_path(device_id: &str) -> Result<()> {
+    let device_id = device_id.trim_end_matches('/');
+
     #[cfg(target_os = "macos")]
     {
         // On macOS, disk0 is always the system drive

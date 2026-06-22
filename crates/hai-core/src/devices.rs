@@ -396,8 +396,7 @@ mod linux {
             return DeviceType::SdCard;
         }
 
-        // Check model name for hints
-        if model.contains("sd ") || model.contains("sd card") {
+        if !model.contains("ssd") && (model.contains("sd ") || model.contains("sd card")) {
             return DeviceType::SdCard;
         }
 
