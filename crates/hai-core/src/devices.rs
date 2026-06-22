@@ -1117,7 +1117,11 @@ mod tests {
                 ("Transcend JetFlash", "Transcend", "JetFlash"),
                 ("Sony Storage", "Sony", "Storage"),
                 ("Toshiba Drive", "Toshiba", "Drive"),
-                ("Western Digital My Passport", "Western Digital", "My Passport"),
+                (
+                    "Western Digital My Passport",
+                    "Western Digital",
+                    "My Passport",
+                ),
                 ("WD Elements", "WD", "Elements"),
                 ("Seagate Backup Plus", "Seagate", "Backup Plus"),
                 ("Crucial X6", "Crucial", "X6"),
@@ -1126,8 +1130,18 @@ mod tests {
 
             for (input, expected_vendor, expected_model) in vendors_to_test {
                 let (vendor, model) = parse_media_name(input);
-                assert_eq!(vendor, Some(expected_vendor.to_string()), "Failed for input: {}", input);
-                assert_eq!(model, Some(expected_model.to_string()), "Failed for input: {}", input);
+                assert_eq!(
+                    vendor,
+                    Some(expected_vendor.to_string()),
+                    "Failed for input: {}",
+                    input
+                );
+                assert_eq!(
+                    model,
+                    Some(expected_model.to_string()),
+                    "Failed for input: {}",
+                    input
+                );
             }
         }
 
@@ -1282,7 +1296,10 @@ mod tests {
             assert_eq!(build_device_name("sda", &None, &None), "sda");
             assert_eq!(build_device_name("sdb", &Some("V".to_string()), &None), "V");
             assert_eq!(build_device_name("sdc", &None, &Some("M".to_string())), "M");
-            assert_eq!(build_device_name("sdd", &Some("V".to_string()), &Some("M".to_string())), "V M");
+            assert_eq!(
+                build_device_name("sdd", &Some("V".to_string()), &Some("M".to_string())),
+                "V M"
+            );
         }
     }
 

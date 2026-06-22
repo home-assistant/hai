@@ -570,12 +570,18 @@ mod tests {
 
     #[test]
     fn test_parse_board_from_filename_qcow2() {
-        let result =
-            parse_board_from_filename_with_suffix("haos_generic-x86-64-14.2.qcow2.xz", "14.2", ".qcow2.xz");
+        let result = parse_board_from_filename_with_suffix(
+            "haos_generic-x86-64-14.2.qcow2.xz",
+            "14.2",
+            ".qcow2.xz",
+        );
         assert_eq!(result.unwrap(), "generic-x86-64");
 
-        let result =
-            parse_board_from_filename_with_suffix("haos_generic-aarch64-14.2.qcow2.xz", "14.2", ".qcow2.xz");
+        let result = parse_board_from_filename_with_suffix(
+            "haos_generic-aarch64-14.2.qcow2.xz",
+            "14.2",
+            ".qcow2.xz",
+        );
         assert_eq!(result.unwrap(), "generic-aarch64");
     }
 
@@ -823,7 +829,10 @@ mod tests {
         // Image expects 100 bytes
         let image = HaosImage {
             board: "test".to_string(),
-            download_url: format!("https://example.com/{}", test_file.file_name().unwrap().to_string_lossy()),
+            download_url: format!(
+                "https://example.com/{}",
+                test_file.file_name().unwrap().to_string_lossy()
+            ),
             size: 100,
             sha256: "abc".to_string(),
         };
@@ -907,7 +916,6 @@ mod tests {
 
         std::env::remove_var("HA_INSTALLER_MOCK");
     }
-
 
     #[tokio::test]
     #[serial]
@@ -1110,7 +1118,9 @@ mod tests {
         assert!(!progress_calls.is_empty());
         assert!(progress_calls.iter().any(|p| p.progress == 0)); // Start
         assert!(progress_calls.iter().any(|p| p.progress == 100)); // End
-        assert!(progress_calls.iter().all(|p| p.stage == FlashStage::Downloading));
+        assert!(progress_calls
+            .iter()
+            .all(|p| p.stage == FlashStage::Downloading));
 
         mock.assert_async().await;
         std::fs::remove_file(&dest).unwrap();
@@ -1194,8 +1204,8 @@ mod tests {
     async fn test_extract_xz_with_progress() {
         std::env::remove_var("HA_INSTALLER_MOCK");
 
-        use std::sync::{Arc, Mutex};
         use std::io::Write;
+        use std::sync::{Arc, Mutex};
 
         struct TestProgressCallback {
             calls: Arc<Mutex<Vec<FlashProgress>>>,
@@ -1235,7 +1245,9 @@ mod tests {
         assert!(!progress_calls.is_empty());
         assert!(progress_calls.iter().any(|p| p.progress == 0)); // Start
         assert!(progress_calls.iter().any(|p| p.progress == 100)); // End
-        assert!(progress_calls.iter().all(|p| p.stage == FlashStage::Extracting));
+        assert!(progress_calls
+            .iter()
+            .all(|p| p.stage == FlashStage::Extracting));
 
         // Cleanup
         std::fs::remove_file(&archive_path).unwrap();
@@ -1256,7 +1268,10 @@ mod tests {
         // Image expects exactly 100 bytes
         let image = HaosImage {
             board: "test".to_string(),
-            download_url: format!("https://example.com/{}", test_file.file_name().unwrap().to_string_lossy()),
+            download_url: format!(
+                "https://example.com/{}",
+                test_file.file_name().unwrap().to_string_lossy()
+            ),
             size: 100,
             sha256: "abc".to_string(),
         };
@@ -1282,14 +1297,12 @@ mod tests {
 
         let release = GitHubRelease {
             tag_name: "14.2".to_string(),
-            assets: vec![
-                GitHubAsset {
-                    name: "haos_rpi4-14.2.img.xz".to_string(),
-                    size: 500_000_000,
-                    browser_download_url: "https://github.com/download/rpi4.img.xz".to_string(),
-                    digest: None, // No digest
-                },
-            ],
+            assets: vec![GitHubAsset {
+                name: "haos_rpi4-14.2.img.xz".to_string(),
+                size: 500_000_000,
+                browser_download_url: "https://github.com/download/rpi4.img.xz".to_string(),
+                digest: None, // No digest
+            }],
         };
 
         let parsed = parse_github_release(release).unwrap();
@@ -1303,14 +1316,12 @@ mod tests {
 
         let release = GitHubRelease {
             tag_name: "14.2".to_string(),
-            assets: vec![
-                GitHubAsset {
-                    name: "haos_rpi4-14.2.img.xz".to_string(),
-                    size: 500_000_000,
-                    browser_download_url: "https://github.com/download/rpi4.img.xz".to_string(),
-                    digest: Some("abc123".to_string()), // No "sha256:" prefix
-                },
-            ],
+            assets: vec![GitHubAsset {
+                name: "haos_rpi4-14.2.img.xz".to_string(),
+                size: 500_000_000,
+                browser_download_url: "https://github.com/download/rpi4.img.xz".to_string(),
+                digest: Some("abc123".to_string()), // No "sha256:" prefix
+            }],
         };
 
         let parsed = parse_github_release(release).unwrap();
@@ -1324,14 +1335,12 @@ mod tests {
 
         let release = GitHubRelease {
             tag_name: "14.2".to_string(),
-            assets: vec![
-                GitHubAsset {
-                    name: "invalid_filename.img.xz".to_string(), // Doesn't match pattern
-                    size: 500_000_000,
-                    browser_download_url: "https://github.com/download/invalid.img.xz".to_string(),
-                    digest: Some("sha256:abc".to_string()),
-                },
-            ],
+            assets: vec![GitHubAsset {
+                name: "invalid_filename.img.xz".to_string(), // Doesn't match pattern
+                size: 500_000_000,
+                browser_download_url: "https://github.com/download/invalid.img.xz".to_string(),
+                digest: Some("sha256:abc".to_string()),
+            }],
         };
 
         let parsed = parse_github_release(release).unwrap();
@@ -1344,7 +1353,7 @@ mod tests {
         let result = parse_board_from_filename_with_suffix(
             "haos_rpi4-14.2.img.xz",
             "99.9", // Wrong version
-            ".img.xz"
+            ".img.xz",
         );
         assert!(result.is_err());
 
@@ -1401,7 +1410,10 @@ mod tests {
 
             let version_info = result.unwrap();
             assert_eq!(version_info.hassos.get("rpi4"), Some(&"14.2".to_string()));
-            assert_eq!(version_info.hassos.get("generic-x86-64"), Some(&"14.2".to_string()));
+            assert_eq!(
+                version_info.hassos.get("generic-x86-64"),
+                Some(&"14.2".to_string())
+            );
 
             mock.assert_async().await;
         }
@@ -1524,7 +1536,8 @@ mod tests {
                 .match_header("Accept", "application/vnd.github.v3+json")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "tag_name": "14.2",
                     "assets": [
                         {
@@ -1540,7 +1553,8 @@ mod tests {
                             "digest": "sha256:def456"
                         }
                     ]
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 
@@ -1628,10 +1642,12 @@ mod tests {
                 .mock("GET", "/tags/14.2")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "tag_name": "14.2",
                     "assets": []
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 
@@ -1655,7 +1671,8 @@ mod tests {
                 .mock("GET", "/tags/14.2")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "tag_name": "14.2",
                     "assets": [
                         {
@@ -1677,7 +1694,8 @@ mod tests {
                             "digest": null
                         }
                     ]
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 
@@ -1709,7 +1727,8 @@ mod tests {
                 .mock("GET", "/redirected/tags/14.2")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "tag_name": "14.2",
                     "assets": [{
                         "name": "haos_rpi4-14.2.img.xz",
@@ -1717,7 +1736,8 @@ mod tests {
                         "browser_download_url": "https://github.com/download/rpi4.img.xz",
                         "digest": "sha256:xyz789"
                     }]
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 
@@ -1743,7 +1763,8 @@ mod tests {
                 .mock("GET", "/tags/14.2")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "tag_name": "14.2",
                     "assets": [{
                         "name": "haos_rpi4-14.2.img.xz",
@@ -1751,7 +1772,8 @@ mod tests {
                         "browser_download_url": "https://github.com/download/rpi4.img.xz",
                         "digest": null
                     }]
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 
@@ -1775,7 +1797,8 @@ mod tests {
                 .mock("GET", "/tags/14.2")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "tag_name": "14.2",
                     "assets": [{
                         "name": "haos_rpi4-14.2.img.xz",
@@ -1783,7 +1806,8 @@ mod tests {
                         "browser_download_url": "https://github.com/download/rpi4.img.xz",
                         "digest": "abc123"
                     }]
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 
@@ -1810,8 +1834,9 @@ mod tests {
                 "http://192.0.2.1:9999/nonexistent", // Using TEST-NET-1 IP that should timeout
                 &dest,
                 None,
-                &crate::NoOpProgress
-            ).await;
+                &crate::NoOpProgress,
+            )
+            .await;
 
             assert!(result.is_err());
             let _ = std::fs::remove_file(&dest);
@@ -1894,7 +1919,8 @@ mod tests {
                 .mock("GET", "/stable.json")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "hassos": {
                         "rpi4": "14.2",
                         "generic-x86-64": "14.2",
@@ -1902,7 +1928,8 @@ mod tests {
                         "yellow": "14.2"
                     },
                     "extra_field": "should be ignored"
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 
@@ -1927,7 +1954,8 @@ mod tests {
                 .mock("GET", "/tags/14.2")
                 .with_status(200)
                 .with_header("content-type", "application/json")
-                .with_body(r#"{
+                .with_body(
+                    r#"{
                     "tag_name": "14.2",
                     "assets": [
                         {
@@ -1937,7 +1965,8 @@ mod tests {
                             "digest": "sha256:qcow2hash"
                         }
                     ]
-                }"#)
+                }"#,
+                )
                 .create_async()
                 .await;
 

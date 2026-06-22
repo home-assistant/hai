@@ -521,7 +521,9 @@ mod tests {
     fn test_mock_block_devices_device_types() {
         let devices = get_mock_block_devices();
         let has_sd_card = devices.iter().any(|d| d.device_type == DeviceType::SdCard);
-        let has_usb = devices.iter().any(|d| d.device_type == DeviceType::UsbDrive);
+        let has_usb = devices
+            .iter()
+            .any(|d| d.device_type == DeviceType::UsbDrive);
         let has_ssd = devices.iter().any(|d| d.device_type == DeviceType::Ssd);
         let has_nvme = devices.iter().any(|d| d.device_type == DeviceType::NvMe);
 
@@ -535,8 +537,16 @@ mod tests {
     fn test_mock_block_devices_have_vendor_and_model() {
         let devices = get_mock_block_devices();
         for device in &devices {
-            assert!(device.vendor.is_some(), "Device {} should have vendor", device.id);
-            assert!(device.model.is_some(), "Device {} should have model", device.id);
+            assert!(
+                device.vendor.is_some(),
+                "Device {} should have vendor",
+                device.id
+            );
+            assert!(
+                device.model.is_some(),
+                "Device {} should have model",
+                device.id
+            );
         }
     }
 
