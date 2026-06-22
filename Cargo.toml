@@ -50,6 +50,10 @@ mockito = "1"
 plist = "1"
 security-framework = "2"
 
+# Linux specific
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+libc = "0.2"
+
 # Tauri
 tauri = { version = "2", features = [] }
 tauri-build = { version = "2", features = [] }

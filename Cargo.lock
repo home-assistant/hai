@@ -1476,6 +1476,7 @@ dependencies = [
  "directories",
  "futures-util",
  "hex",
+ "libc",
  "mockito",
  "plist",
  "reqwest",
@@ -1489,6 +1490,7 @@ dependencies = [
  "tokio",
  "urlencoding",
  "xz2",
+ "zbus",
 ]
 
 [[package]]
@@ -4408,8 +4410,10 @@ dependencies = [
  "mio",
  "parking_lot",
  "pin-project-lite",
+ "signal-hook-registry",
  "socket2",
  "tokio-macros",
+ "tracing",
  "windows-sys 0.61.2",
 ]
 
@@ -5711,6 +5715,7 @@ dependencies = [
  "ordered-stream",
  "serde",
  "serde_repr",
+ "tokio",
  "tracing",
  "uds_windows",
  "uuid",
