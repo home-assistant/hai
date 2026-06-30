@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { wizardState } from "../../state/wizard-state.js";
+import { openExternalUrl } from "../../utils/external-url.js";
 import "../../components/info-dialog.js";
 
 @customElement("minipc-setup-method-view")
@@ -171,16 +171,9 @@ export class MiniPCSetupMethodView extends LitElement {
 
   private async _onOpenDocs() {
     this._showUsbDialog = false;
-    try {
-      await openUrl(
-        "https://www.home-assistant.io/installation/generic-x86-64"
-      );
-    } catch {
-      window.open(
-        "https://www.home-assistant.io/installation/generic-x86-64",
-        "_blank"
-      );
-    }
+    await openExternalUrl(
+      "https://www.home-assistant.io/installation/generic-x86-64"
+    );
   }
 }
 

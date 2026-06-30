@@ -2,8 +2,8 @@ import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { checkUtmStatus } from "../../api/commands.js";
 import type { UtmStatus } from "../../api/types.js";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { wizardState } from "../../state/wizard-state.js";
+import { openExternalUrl } from "../../utils/external-url.js";
 
 @customElement("utm-check-view")
 export class UtmCheckView extends LitElement {
@@ -415,12 +415,7 @@ export class UtmCheckView extends LitElement {
   }
 
   private async _openUtmDownload() {
-    try {
-      await openUrl("https://mac.getutm.app/");
-    } catch {
-      // Fallback for browser-only mode
-      window.open("https://mac.getutm.app/", "_blank");
-    }
+    await openExternalUrl("https://mac.getutm.app/");
   }
 }
 
