@@ -38,7 +38,7 @@ test.describe("Navigation Flow", () => {
 
     // Check for all options
     await expect(
-      pathSelectionView.locator('option-card[title="Home Assistant Hardware"]')
+      pathSelectionView.locator('option-card[title="Home Assistant hardware"]')
     ).toBeVisible();
     await expect(
       pathSelectionView.locator(
@@ -49,7 +49,7 @@ test.describe("Navigation Flow", () => {
       pathSelectionView.locator('option-card[title="Generic (mini) PC"]')
     ).toBeVisible();
     await expect(
-      pathSelectionView.locator('option-card[title="Proxmox Server"]')
+      pathSelectionView.locator('option-card[title="Proxmox server"]')
     ).toBeVisible();
     await expect(
       pathSelectionView.locator('option-card[title="Others"]')
@@ -104,7 +104,7 @@ test.describe("Path Selection Options", () => {
   test("Home Assistant Hardware option has correct description", async ({
     page,
   }) => {
-    const card = page.locator('option-card[title="Home Assistant Hardware"]');
+    const card = page.locator('option-card[title="Home Assistant hardware"]');
     await expect(card).toHaveAttribute(
       "description",
       /Green.*Yellow.*Blue.*Nabu Casa/
@@ -124,7 +124,7 @@ test.describe("Path Selection Options", () => {
   });
 
   test("Proxmox option has correct description", async ({ page }) => {
-    const card = page.locator('option-card[title="Proxmox Server"]');
+    const card = page.locator('option-card[title="Proxmox server"]');
     await expect(card).toHaveAttribute("description", /VM.*Proxmox/);
   });
 });
@@ -445,7 +445,7 @@ test.describe("SBC Confirmation", () => {
   test("shows selected drive", async ({ page }) => {
     const confirmationView = page.locator("confirmation-view");
     // Should show target drive info
-    await expect(confirmationView).toContainText("Target Drive");
+    await expect(confirmationView).toContainText("Target drive");
   });
 
   test("shows HAOS version", async ({ page }) => {
@@ -691,7 +691,7 @@ test.describe("SBC Success", () => {
     const successView = page.locator("success-view");
     await expect(successView.locator(".next-steps")).toBeVisible();
     await expect(successView.locator(".next-steps-title")).toContainText(
-      "Next Steps"
+      "Next steps"
     );
   });
 

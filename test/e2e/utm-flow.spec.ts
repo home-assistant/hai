@@ -9,7 +9,7 @@ test.describe("UTM Installation Flow", () => {
 
     // Select Virtual Machine option (only visible on macOS)
     // In tests, we may need to check if it exists first
-    const vmOption = page.locator('option-card[title="Virtual Machine"]');
+    const vmOption = page.locator('option-card[title="Virtual machine"]');
     const vmOptionCount = await vmOption.count();
 
     if (vmOptionCount > 0) {
@@ -26,7 +26,7 @@ test.describe("UTM Installation Flow", () => {
 
   test("shows wizard shell with correct flow title", async ({ page }) => {
     const wizardShell = page.locator("wizard-shell");
-    await expect(wizardShell).toContainText("Virtual Machine");
+    await expect(wizardShell).toContainText("Virtual machine");
   });
 
   test("shows step indicator with all steps", async ({ page }) => {
@@ -47,14 +47,14 @@ test.describe("UTM Installation Flow", () => {
 
   test("step 1: shows UTM status check heading", async ({ page }) => {
     const checkView = page.locator("utm-check-view");
-    await expect(checkView.locator("h2")).toContainText("Virtual Machine Setup");
+    await expect(checkView.locator("h2")).toContainText("Virtual machine setup");
   });
 
   test("step 1: shows warning about testing/evaluation", async ({ page }) => {
     const checkView = page.locator("utm-check-view");
     const warningCard = checkView.locator(".warning-card");
     await expect(warningCard).toBeVisible();
-    await expect(warningCard).toContainText("Best for Testing");
+    await expect(warningCard).toContainText("Best for testing");
     await expect(warningCard).toContainText("Mac needs to be running");
   });
 
@@ -173,7 +173,7 @@ test.describe("UTM Installation Flow", () => {
     const configView = page.locator("utm-configure-view");
     await expect(configView).toBeVisible();
     await expect(configView.locator("h2")).toContainText(
-      "Configure Virtual Machine"
+      "Configure virtual machine"
     );
   });
 
@@ -184,9 +184,9 @@ test.describe("UTM Installation Flow", () => {
 
     // Check for all settings
     await expect(configView).toContainText("Display name");
-    await expect(configView).toContainText("CPU Cores");
+    await expect(configView).toContainText("CPU cores");
     await expect(configView).toContainText("Memory");
-    await expect(configView).toContainText("Disk Size");
+    await expect(configView).toContainText("Disk size");
   });
 
   test("step 2: can modify VM name", async ({ page }) => {
@@ -207,7 +207,7 @@ test.describe("UTM Installation Flow", () => {
     const configView = page.locator("utm-configure-view");
 
     // Should show CPU cores setting with value
-    await expect(configView).toContainText("CPU Cores");
+    await expect(configView).toContainText("CPU cores");
     await expect(configView).toContainText("Cores");
   });
 
@@ -227,7 +227,7 @@ test.describe("UTM Installation Flow", () => {
     const configView = page.locator("utm-configure-view");
 
     // Should show disk size
-    await expect(configView).toContainText("Disk Size");
+    await expect(configView).toContainText("Disk size");
   });
 
   test("step 2: shows configuration descriptions", async ({ page }) => {
@@ -286,7 +286,7 @@ test.describe("UTM Installation Flow", () => {
     const confirmView = page.locator("utm-confirm-view");
 
     // Should show VM configuration details
-    await expect(confirmView).toContainText("Virtual Machine");
+    await expect(confirmView).toContainText("Virtual machine");
   });
 
   test("step 3: shows Install button instead of Next", async ({ page }) => {
@@ -456,7 +456,7 @@ test.describe("UTM Installation Flow", () => {
 
     // Restart flow
     await page.locator("welcome-view").locator(".lets-go-button").click();
-    const vmOption = page.locator('option-card[title="Virtual Machine"]');
+    const vmOption = page.locator('option-card[title="Virtual machine"]');
     const vmOptionCount = await vmOption.count();
     if (vmOptionCount === 0) {
       test.skip(true, "Virtual Machine option not available");
