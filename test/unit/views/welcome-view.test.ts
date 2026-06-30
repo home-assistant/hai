@@ -57,6 +57,19 @@ describe("welcome-view", () => {
     expect(learnMore).to.exist;
     expect(learnMore!.getAttribute("href")).to.include("home-assistant.io");
     expect(learnMore!.getAttribute("target")).to.equal("_blank");
+    expect(learnMore!.getAttribute("rel")).to.equal("noopener noreferrer");
+  });
+
+  it("intercepts the learn more link click", async () => {
+    const el = await fixture<WelcomeView>(html`<welcome-view></welcome-view>`);
+
+    const learnMore = el.shadowRoot!.querySelector(
+      ".learn-more"
+    ) as HTMLAnchorElement;
+    const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+
+    expect(learnMore.dispatchEvent(event)).to.be.false;
+    expect(event.defaultPrevented).to.be.true;
   });
 
   it("renders the OHF logo with light and dark variants", async () => {

@@ -1,6 +1,7 @@
 import { LitElement, html, css, svg } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { wizardState, type WizardState } from "../../state/wizard-state.js";
+import { openExternalLink } from "../../utils/external-url.js";
 
 @customElement("success-view")
 export class SuccessView extends LitElement {
@@ -250,7 +251,12 @@ export class SuccessView extends LitElement {
             <span class="step-number">4</span>
             <span class="step-text"
               >Open
-              <a href="http://homeassistant.local:8123" target="_blank"
+              <a
+                href="http://homeassistant.local:8123"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click=${(event: Event) =>
+                  openExternalLink(event, "http://homeassistant.local:8123")}
                 >homeassistant.local:8123</a
               >
               in your browser</span
@@ -266,6 +272,12 @@ export class SuccessView extends LitElement {
             class="app-link"
             href="https://apps.apple.com/app/home-assistant/id1099568401"
             target="_blank"
+            rel="noopener noreferrer"
+            @click=${(event: Event) =>
+              openExternalLink(
+                event,
+                "https://apps.apple.com/app/home-assistant/id1099568401"
+              )}
           >
             ${this._renderAppleIcon()}
             <span>App Store</span>
@@ -274,6 +286,12 @@ export class SuccessView extends LitElement {
             class="app-link"
             href="https://play.google.com/store/apps/details?id=io.homeassistant.companion.android"
             target="_blank"
+            rel="noopener noreferrer"
+            @click=${(event: Event) =>
+              openExternalLink(
+                event,
+                "https://play.google.com/store/apps/details?id=io.homeassistant.companion.android"
+              )}
           >
             ${this._renderGooglePlayIcon()}
             <span>Google Play</span>

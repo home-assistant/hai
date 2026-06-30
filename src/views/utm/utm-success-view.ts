@@ -1,6 +1,7 @@
 import { LitElement, html, css, svg } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { wizardState, type WizardState } from "../../state/wizard-state.js";
+import { openExternalLink } from "../../utils/external-url.js";
 
 @customElement("utm-success-view")
 export class UtmSuccessView extends LitElement {
@@ -243,7 +244,14 @@ export class UtmSuccessView extends LitElement {
             <span class="step-number">2</span>
             <span class="step-text">
               Open
-              <a href=${haUrl} target="_blank"> ${displayUrl} </a>
+              <a
+                href=${haUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                @click=${(event: Event) => openExternalLink(event, haUrl)}
+              >
+                ${displayUrl}
+              </a>
               in your browser
             </span>
           </li>
@@ -269,6 +277,12 @@ export class UtmSuccessView extends LitElement {
             class="app-link"
             href="https://apps.apple.com/app/home-assistant/id1099568401"
             target="_blank"
+            rel="noopener noreferrer"
+            @click=${(event: Event) =>
+              openExternalLink(
+                event,
+                "https://apps.apple.com/app/home-assistant/id1099568401"
+              )}
           >
             ${this._renderAppleIcon()}
             <span>App Store</span>
@@ -277,6 +291,12 @@ export class UtmSuccessView extends LitElement {
             class="app-link"
             href="https://play.google.com/store/apps/details?id=io.homeassistant.companion.android"
             target="_blank"
+            rel="noopener noreferrer"
+            @click=${(event: Event) =>
+              openExternalLink(
+                event,
+                "https://play.google.com/store/apps/details?id=io.homeassistant.companion.android"
+              )}
           >
             ${this._renderGooglePlayIcon()}
             <span>Google Play</span>

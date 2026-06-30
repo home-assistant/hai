@@ -33,8 +33,7 @@ import {
   type WizardFlow,
   type WizardState,
 } from "../state/wizard-state.js";
-
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { openExternalUrl } from "../utils/external-url.js";
 
 export type ViewName =
   | "welcome"
@@ -561,12 +560,7 @@ export class AppShell extends LitElement {
   }
 
   private async _onToolboxOpen() {
-    try {
-      await openUrl("https://toolbox.openhomefoundation.org/");
-    } catch {
-      // Fallback for browser-only mode
-      window.open("https://toolbox.openhomefoundation.org/", "_blank");
-    }
+    await openExternalUrl("https://toolbox.openhomefoundation.org/");
   }
 }
 

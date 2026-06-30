@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { openExternalLink } from "../utils/external-url.js";
 
 @customElement("welcome-view")
 export class WelcomeView extends LitElement {
@@ -176,6 +177,11 @@ export class WelcomeView extends LitElement {
         href="https://www.home-assistant.io/installation/"
         target="_blank"
         rel="noopener noreferrer"
+        @click=${(event: Event) =>
+          openExternalLink(
+            event,
+            "https://www.home-assistant.io/installation/"
+          )}
       >
         I want to learn more first...
       </a>
@@ -185,6 +191,8 @@ export class WelcomeView extends LitElement {
         href="https://www.openhomefoundation.org/"
         target="_blank"
         rel="noopener noreferrer"
+        @click=${(event: Event) =>
+          openExternalLink(event, "https://www.openhomefoundation.org/")}
       >
         <img
           class="ohf-logo ohf-logo-light"

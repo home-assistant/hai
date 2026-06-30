@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { openExternalUrl } from "../utils/external-url.js";
 
 interface OtherOption {
   title: string;
@@ -220,7 +220,7 @@ export class OtherOptionsView extends LitElement {
             (option) => html`
               <div
                 class="option-item"
-                @click=${() => this._openLink(option.url)}
+                @click=${() => openExternalUrl(option.url)}
               >
                 <div class="option-icon">${this._renderIcon(option.icon)}</div>
                 <div class="option-text">
@@ -261,15 +261,6 @@ export class OtherOptionsView extends LitElement {
         composed: true,
       })
     );
-  }
-
-  private async _openLink(url: string) {
-    try {
-      await openUrl(url);
-    } catch {
-      // Fallback for development/web
-      window.open(url, "_blank");
-    }
   }
 }
 
