@@ -263,7 +263,7 @@ export class UtmSuccessView extends LitElement {
       </div>
 
       <div class="companion-section">
-        <p class="companion-title">Get the companion app</p>
+        <p class="companion-title">Get the Home Assistant companion app</p>
         <div class="app-links">
           <a
             class="app-link"

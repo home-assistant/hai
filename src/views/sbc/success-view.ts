@@ -260,7 +260,7 @@ export class SuccessView extends LitElement {
       </div>
 
       <div class="companion-section">
-        <p class="companion-title">Get the Home Assistant Companion App</p>
+        <p class="companion-title">Get the Home Assistant companion app</p>
         <div class="app-links">
           <a
             class="app-link"
