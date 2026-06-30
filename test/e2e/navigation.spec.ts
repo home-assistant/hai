@@ -705,7 +705,7 @@ test.describe("SBC Success", () => {
     const successView = page.locator("success-view");
     await expect(successView.locator(".companion-section")).toBeVisible();
     await expect(successView.locator(".companion-title")).toContainText(
-      "companion app"
+      "Home Assistant Companion App"
     );
   });
 

@@ -266,7 +266,7 @@ export class ProxmoxSuccessView extends LitElement {
       </div>
 
       <div class="companion-section">
-        <p class="companion-title">Get the Home Assistant companion app</p>
+        <p class="companion-title">Get the Home Assistant Companion App</p>
         <div class="app-links">
           <a
             class="app-link"
