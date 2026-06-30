@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 @customElement("welcome-view")
 export class WelcomeView extends LitElement {
@@ -174,8 +175,8 @@ export class WelcomeView extends LitElement {
       <a
         class="learn-more"
         href="https://www.home-assistant.io/installation/"
-        target="_blank"
-        rel="noopener noreferrer"
+        @click=${(event: Event) =>
+          this._openLink(event, "https://www.home-assistant.io/installation/")}
       >
         I want to learn more first...
       </a>
@@ -183,8 +184,8 @@ export class WelcomeView extends LitElement {
       <a
         class="ohf-link"
         href="https://www.openhomefoundation.org/"
-        target="_blank"
-        rel="noopener noreferrer"
+        @click=${(event: Event) =>
+          this._openLink(event, "https://www.openhomefoundation.org/")}
       >
         <img
           class="ohf-logo ohf-logo-light"
@@ -233,6 +234,16 @@ export class WelcomeView extends LitElement {
         composed: true,
       })
     );
+  }
+
+  private async _openLink(event: Event, url: string) {
+    event.preventDefault();
+    try {
+      await openUrl(url);
+    } catch {
+      // Fallback for development/web
+      window.open(url, "_blank");
+    }
   }
 
   disconnectedCallback() {
