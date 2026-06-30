@@ -57,9 +57,9 @@ test.describe("Other Options View", () => {
     const dockerOption = page
       .locator("other-options-view")
       .locator(".option-item")
-      .filter({ hasText: "Docker Container" });
+      .filter({ hasText: "Docker container" });
     await expect(dockerOption).toBeVisible();
-    await expect(dockerOption).toContainText("Home Assistant Container");
+    await expect(dockerOption).toContainText("Home Assistant container");
   });
 
   test("displays Synology NAS option", async ({ page }) => {
@@ -90,7 +90,7 @@ test.describe("Other Options View", () => {
     const linuxVMOption = page
       .locator("other-options-view")
       .locator(".option-item")
-      .filter({ hasText: "Linux Virtual Machine" });
+      .filter({ hasText: "Linux virtual machine" });
     await expect(linuxVMOption).toBeVisible();
     await expect(linuxVMOption).toContainText("KVM");
     await expect(linuxVMOption).toContainText("VirtualBox");
@@ -102,7 +102,7 @@ test.describe("Other Options View", () => {
     const windowsVMOption = page
       .locator("other-options-view")
       .locator(".option-item")
-      .filter({ hasText: "Windows Virtual Machine" });
+      .filter({ hasText: "Windows virtual machine" });
     await expect(windowsVMOption).toBeVisible();
     await expect(windowsVMOption).toContainText("Hyper-V");
     await expect(windowsVMOption).toContainText("VMware");

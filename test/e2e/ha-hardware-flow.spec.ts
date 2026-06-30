@@ -16,7 +16,7 @@ test.describe("Home Assistant Hardware Flow", () => {
     page,
   }) => {
     // Click Home Assistant Hardware option
-    await page.locator('option-card[title="Home Assistant Hardware"]').click();
+    await page.locator('option-card[title="Home Assistant hardware"]').click();
 
     // Should now see wizard shell
     const wizardShell = page.locator("wizard-shell");
@@ -29,7 +29,7 @@ test.describe("Home Assistant Hardware Flow", () => {
   test("shows step indicator with correct steps for HA Hardware flow", async ({
     page,
   }) => {
-    await page.locator('option-card[title="Home Assistant Hardware"]').click();
+    await page.locator('option-card[title="Home Assistant hardware"]').click();
 
     const wizardShell = page.locator("wizard-shell");
     await expect(wizardShell).toBeVisible();
@@ -40,18 +40,18 @@ test.describe("Home Assistant Hardware Flow", () => {
   });
 
   test("shows placeholder content for unimplemented flow", async ({ page }) => {
-    await page.locator('option-card[title="Home Assistant Hardware"]').click();
+    await page.locator('option-card[title="Home Assistant hardware"]').click();
 
     // The wizard shell should be visible with placeholder content
     const wizardShell = page.locator("wizard-shell");
     await expect(wizardShell).toBeVisible();
 
     // Should show Home Assistant Hardware title in placeholder
-    await expect(wizardShell).toContainText("Home Assistant Hardware");
+    await expect(wizardShell).toContainText("Home Assistant hardware");
   });
 
   test("wizard has cancel button that returns to welcome", async ({ page }) => {
-    await page.locator('option-card[title="Home Assistant Hardware"]').click();
+    await page.locator('option-card[title="Home Assistant hardware"]').click();
 
     const wizardShell = page.locator("wizard-shell");
     await expect(wizardShell).toBeVisible();
@@ -66,7 +66,7 @@ test.describe("Home Assistant Hardware Flow", () => {
   });
 
   test("wizard has back button (disabled on first step)", async ({ page }) => {
-    await page.locator('option-card[title="Home Assistant Hardware"]').click();
+    await page.locator('option-card[title="Home Assistant hardware"]').click();
 
     const wizardShell = page.locator("wizard-shell");
     await expect(wizardShell).toBeVisible();
@@ -87,7 +87,7 @@ test.describe("Home Assistant Hardware - Path Selection", () => {
     await expect(pathSelection).toBeVisible();
 
     const haHardwareOption = pathSelection.locator(
-      'option-card[title="Home Assistant Hardware"]'
+      'option-card[title="Home Assistant hardware"]'
     );
     await expect(haHardwareOption).toBeVisible();
   });
@@ -97,7 +97,7 @@ test.describe("Home Assistant Hardware - Path Selection", () => {
     await page.locator("welcome-view").locator(".lets-go-button").click();
 
     const haHardwareOption = page.locator(
-      'option-card[title="Home Assistant Hardware"]'
+      'option-card[title="Home Assistant hardware"]'
     );
     await expect(haHardwareOption).toHaveAttribute(
       "description",
