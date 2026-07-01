@@ -208,7 +208,7 @@ test.describe("UTM Installation Flow", () => {
 
     // Should show CPU cores setting with value
     await expect(configView).toContainText("CPU cores");
-    await expect(configView).toContainText("Cores");
+    await expect(configView).toContainText("cores");
   });
 
   test("step 2: shows memory slider with GB value", async ({ page }) => {

@@ -186,7 +186,7 @@ test.describe("Proxmox Installation Flow", () => {
     const cpuSlider = configView.locator('input[type="range"]').first();
 
     // Should show CPU value
-    await expect(configView).toContainText("Cores");
+    await expect(configView).toContainText("cores");
   });
 
   test("step 2: can adjust memory slider", async ({ page }) => {

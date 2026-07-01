@@ -438,7 +438,7 @@ export class UtmConfigureView extends LitElement {
           <div class="setting-content">
             <div class="setting-header">
               <span class="setting-label">CPU cores</span>
-              <span class="setting-value">${this._cpuCores} Cores</span>
+              <span class="setting-value">${this._cpuCores} cores</span>
             </div>
             <div class="slider-container">
               <input
