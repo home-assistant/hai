@@ -148,8 +148,8 @@ export class MiniPCSetupMethodView extends LitElement {
         ?open=${this._showUsbDialog}
         title="USB boot installation"
         message="Creating bootable USB drives is not supported by this installer. However, we have detailed instructions in our documentation that will guide you through the process."
-        primaryLabel="View Instructions"
-        secondaryLabel="Go Back"
+        primaryLabel="View instructions"
+        secondaryLabel="Go back"
         @dialog-primary=${this._onOpenDocs}
         @dialog-secondary=${this._onCloseDialog}
       ></info-dialog>

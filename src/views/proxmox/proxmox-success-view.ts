@@ -233,7 +233,7 @@ export class ProxmoxSuccessView extends LitElement {
       </p>
 
       <div class="next-steps">
-        <p class="next-steps-title">Next Steps</p>
+        <p class="next-steps-title">Next steps</p>
         <ol class="steps-list">
           <li class="step-item">
             <span class="step-number">1</span>
@@ -266,7 +266,7 @@ export class ProxmoxSuccessView extends LitElement {
       </div>
 
       <div class="companion-section">
-        <p class="companion-title">Get the Companion App</p>
+        <p class="companion-title">Get the Home Assistant Companion App</p>
         <div class="app-links">
           <a
             class="app-link"

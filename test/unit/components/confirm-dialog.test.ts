@@ -71,7 +71,7 @@ describe("confirm-dialog", () => {
       ".dialog-button.danger"
     );
     expect(confirmButton).to.exist;
-    expect(confirmButton!.textContent!.trim()).to.equal("Erase and Install");
+    expect(confirmButton!.textContent!.trim()).to.equal("Erase and install");
   });
 
   it("dispatches dialog-cancel event when cancel button is clicked", async () => {

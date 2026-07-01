@@ -217,17 +217,17 @@ export class DriveCard extends LitElement {
   private _getTypeLabel(): string {
     switch (this.deviceType) {
       case "sd_card":
-        return "SD Card";
+        return "SD card";
       case "usb_drive":
-        return "USB Drive";
+        return "USB drive";
       case "ssd":
         return "SSD";
       case "hdd":
-        return "Hard Drive";
+        return "Hard drive";
       case "nvme":
         return "NVMe";
       default:
-        return "Storage Device";
+        return "Storage device";
     }
   }
 

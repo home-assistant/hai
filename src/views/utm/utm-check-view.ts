@@ -275,11 +275,11 @@ export class UtmCheckView extends LitElement {
 
   render() {
     return html`
-      <h2>Virtual Machine Setup</h2>
+      <h2>Virtual machine setup</h2>
       <p class="subtitle">Run Home Assistant in a virtual machine using UTM</p>
 
       <div class="warning-card">
-        <p class="warning-title">Best for Testing & Evaluation</p>
+        <p class="warning-title">Best for testing & evaluation</p>
         <p class="warning-description">
           A virtual machine in UTM is great for trying Home Assistant out, but
           maybe not the best solution to run your actual smart home on.
@@ -339,7 +339,7 @@ export class UtmCheckView extends LitElement {
         </div>
       </div>
       <button class="refresh-button" @click=${this._checkStatus}>
-        ${this._renderRefreshIcon()} Try Again
+        ${this._renderRefreshIcon()} Try again
       </button>
     `;
   }

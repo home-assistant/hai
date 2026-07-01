@@ -183,9 +183,9 @@ export class ConfirmationView extends LitElement {
 
   render() {
     const selections = this._wizardState.selections;
-    const deviceName = (selections.deviceName as string) || "Unknown Device";
+    const deviceName = (selections.deviceName as string) || "Unknown device";
     const deviceImage = selections.deviceImage as string | undefined;
-    const driveName = (selections.driveName as string) || "Unknown Drive";
+    const driveName = (selections.driveName as string) || "Unknown drive";
     const driveSize = (selections.driveSize as number) || 0;
     const deviceConfig = selections.deviceConfig as HaosConfig | undefined;
 
@@ -224,7 +224,7 @@ export class ConfirmationView extends LitElement {
         <div class="summary-row">
           <div class="icon-container">${this._renderDriveIcon()}</div>
           <div class="summary-info">
-            <p class="summary-label">Target Drive</p>
+            <p class="summary-label">Target drive</p>
             <p class="summary-value">${driveName}</p>
             <p class="summary-detail">${this._formatSize(driveSize)}</p>
           </div>

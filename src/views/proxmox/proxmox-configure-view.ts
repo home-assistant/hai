@@ -583,7 +583,7 @@ export class ProxmoxConfigureView extends LitElement {
   render() {
     if (this._error) {
       return html`
-        <h2>Configure Virtual Machine</h2>
+        <h2>Configure virtual machine</h2>
         <p class="subtitle">Configure your Home Assistant VM on Proxmox</p>
         <div class="config-card">
           <p class="error-text">${this._error}</p>
@@ -600,7 +600,7 @@ export class ProxmoxConfigureView extends LitElement {
     const diskIndex = diskSizeOptions.indexOf(this._diskSizeGb);
 
     return html`
-      <h2>Configure Virtual Machine</h2>
+      <h2>Configure virtual machine</h2>
       <p class="subtitle">Configure your Home Assistant VM on Proxmox</p>
 
       <div class="config-card">
@@ -608,7 +608,7 @@ export class ProxmoxConfigureView extends LitElement {
         <div class="setting-row">
           <div class="setting-icon">${this._renderLabelIcon()}</div>
           <div class="setting-content">
-            <span class="setting-label">Display Name</span>
+            <span class="setting-label">Display name</span>
             <input
               type="text"
               class="name-input"
@@ -710,8 +710,8 @@ export class ProxmoxConfigureView extends LitElement {
           <div class="setting-icon">${this._renderCpuIcon()}</div>
           <div class="setting-content">
             <div class="setting-header">
-              <span class="setting-label">CPU Cores</span>
-              <span class="setting-value">${this._cpuCores} Cores</span>
+              <span class="setting-label">CPU cores</span>
+              <span class="setting-value">${this._cpuCores} cores</span>
             </div>
             <div class="slider-container">
               <input
@@ -758,7 +758,7 @@ export class ProxmoxConfigureView extends LitElement {
           <div class="setting-icon">${this._renderDiskIcon()}</div>
           <div class="setting-content">
             <div class="setting-header">
-              <span class="setting-label">Disk Size</span>
+              <span class="setting-label">Disk size</span>
               <span class="setting-value"
                 >${this._formatDiskSize(this._diskSizeGb)}</span
               >

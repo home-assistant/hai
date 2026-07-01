@@ -264,7 +264,7 @@ export class MiniPCArchitectureSelectionView extends LitElement {
           </span>
           <p class="error-message">${this._error}</p>
           <button class="retry-button" @click=${this._loadDevices}>
-            Try Again
+            Try again
           </button>
         </div>
       `;

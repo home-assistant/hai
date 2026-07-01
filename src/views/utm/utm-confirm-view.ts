@@ -171,10 +171,10 @@ export class UtmConfirmView extends LitElement {
         <div class="summary-row">
           <div class="icon-container">${this._renderVmIcon()}</div>
           <div class="summary-info">
-            <p class="summary-label">Virtual Machine</p>
+            <p class="summary-label">Virtual machine</p>
             <p class="summary-value">${vmName}</p>
             <p class="summary-detail">
-              ${cpuCores} CPU Cores, ${this._formatMemory(memoryMb)}
+              ${cpuCores} CPU cores, ${this._formatMemory(memoryMb)}
             </p>
           </div>
         </div>

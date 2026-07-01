@@ -112,7 +112,7 @@ export class PathSelectionView extends LitElement {
 
         <div class="options-grid">
           <option-card
-            title="Home Assistant Hardware"
+            title="Home Assistant hardware"
             description="Home Assistant Green, Yellow, or Blue by Nabu Casa"
             icon="ha-hardware"
             @click=${() => this._onSelectPath("ha-hardware")}
@@ -133,7 +133,7 @@ export class PathSelectionView extends LitElement {
           ></option-card>
 
           <option-card
-            title="Proxmox Server"
+            title="Proxmox server"
             description="Create a VM on your Proxmox virtualization server"
             icon="proxmox"
             @click=${() => this._onSelectPath("proxmox")}
@@ -162,7 +162,7 @@ export class PathSelectionView extends LitElement {
 
     return html`
       <option-card
-        title="Virtual Machine"
+        title="Virtual machine"
         description="Run Home Assistant in UTM on your Mac"
         icon="vm"
         @click=${() => this._onSelectPath("vm")}

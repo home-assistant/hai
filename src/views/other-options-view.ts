@@ -11,8 +11,8 @@ interface OtherOption {
 
 const OTHER_OPTIONS: OtherOption[] = [
   {
-    title: "Docker Container",
-    description: "Run Home Assistant Container",
+    title: "Docker container",
+    description: "Run Home Assistant container",
     url: "https://www.home-assistant.io/installation/linux#docker-compose",
     icon: "docker",
   },
@@ -31,13 +31,13 @@ const OTHER_OPTIONS: OtherOption[] = [
     icon: "qnap",
   },
   {
-    title: "Linux Virtual Machine",
+    title: "Linux virtual machine",
     description: "Run Home Assistant OS in KVM, VirtualBox, or VMware on Linux",
     url: "https://www.home-assistant.io/installation/linux",
     icon: "linux",
   },
   {
-    title: "Windows Virtual Machine",
+    title: "Windows virtual machine",
     description:
       "Run Home Assistant OS in Hyper-V, VirtualBox, or VMware on Windows",
     url: "https://www.home-assistant.io/installation/windows",

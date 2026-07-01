@@ -157,7 +157,7 @@ export class DeviceSelectionView extends LitElement {
           <span class="error-icon">⚠️</span>
           <p class="error-message">${this._error}</p>
           <button class="retry-button" @click=${this._loadDevices}>
-            Try Again
+            Try again
           </button>
         </div>
       `;

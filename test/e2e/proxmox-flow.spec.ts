@@ -7,7 +7,7 @@ test.describe("Proxmox Installation Flow", () => {
     await page.locator("welcome-view").locator(".lets-go-button").click();
     await expect(page.locator("path-selection-view")).toBeVisible();
     // Select Proxmox Server option
-    await page.locator('option-card[title="Proxmox Server"]').click();
+    await page.locator('option-card[title="Proxmox server"]').click();
     await expect(page.locator("wizard-shell")).toBeVisible();
   });
 
@@ -147,7 +147,9 @@ test.describe("Proxmox Installation Flow", () => {
 
     const configView = page.locator("proxmox-configure-view");
     await expect(configView).toBeVisible();
-    await expect(configView.locator("h2")).toContainText("Configure Virtual Machine");
+    await expect(configView.locator("h2")).toContainText(
+      "Configure virtual machine"
+    );
   });
 
   test("step 2: shows all configuration options", async ({ page }) => {
@@ -156,13 +158,13 @@ test.describe("Proxmox Installation Flow", () => {
     const configView = page.locator("proxmox-configure-view");
 
     // Check for all settings
-    await expect(configView).toContainText("Display Name");
+    await expect(configView).toContainText("Display name");
     await expect(configView).toContainText("Node");
     await expect(configView).toContainText("Storage");
     await expect(configView).toContainText("VM ID");
-    await expect(configView).toContainText("CPU Cores");
+    await expect(configView).toContainText("CPU cores");
     await expect(configView).toContainText("Memory");
-    await expect(configView).toContainText("Disk Size");
+    await expect(configView).toContainText("Disk size");
   });
 
   test("step 2: can modify VM name", async ({ page }) => {
@@ -184,7 +186,7 @@ test.describe("Proxmox Installation Flow", () => {
     const cpuSlider = configView.locator('input[type="range"]').first();
 
     // Should show CPU value
-    await expect(configView).toContainText("Cores");
+    await expect(configView).toContainText("cores");
   });
 
   test("step 2: can adjust memory slider", async ({ page }) => {
@@ -235,7 +237,7 @@ test.describe("Proxmox Installation Flow", () => {
     const confirmView = page.locator("proxmox-confirm-view");
 
     // Should show VM details
-    await expect(confirmView).toContainText("Virtual Machine");
+    await expect(confirmView).toContainText("Virtual machine");
     await expect(confirmView).toContainText("Node");
     await expect(confirmView).toContainText("Storage");
   });
@@ -397,7 +399,7 @@ test.describe("Proxmox Installation Flow", () => {
 
     // Restart and test cancel on step 2
     await page.locator("welcome-view").locator(".lets-go-button").click();
-    await page.locator('option-card[title="Proxmox Server"]').click();
+    await page.locator('option-card[title="Proxmox server"]').click();
     await navigateToProxmoxStep2(page);
     await wizardShell.locator(".cancel-button").click();
     await expect(page.locator("welcome-view")).toBeVisible();

@@ -42,10 +42,10 @@ describe("path-selection-view", () => {
       card.getAttribute("title")
     );
 
-    expect(titles).to.include("Home Assistant Hardware");
+    expect(titles).to.include("Home Assistant hardware");
     expect(titles).to.include("Raspberry Pi & other boards");
     expect(titles).to.include("Generic (mini) PC");
-    expect(titles).to.include("Proxmox Server");
+    expect(titles).to.include("Proxmox server");
     expect(titles).to.include("Others");
   });
 

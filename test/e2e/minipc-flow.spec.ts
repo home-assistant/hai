@@ -98,7 +98,7 @@ test.describe("Mini PC Flow - Setup Method Selection", () => {
 
     // Check for primary button (View Instructions)
     const primaryButton = infoDialog.locator(
-      'wa-button[variant="brand"], button:has-text("View Instructions")'
+      'wa-button[variant="brand"], button:has-text("View instructions")'
     );
     await expect(primaryButton).toBeVisible();
   });
@@ -117,7 +117,7 @@ test.describe("Mini PC Flow - Setup Method Selection", () => {
 
     // Click secondary button (Go Back)
     const secondaryButton = infoDialog.locator(
-      'wa-button[variant="neutral"], button:has-text("Go Back")'
+      'wa-button[variant="neutral"], button:has-text("Go back")'
     );
     await secondaryButton.click();
 

@@ -156,7 +156,7 @@ describe("drive-card", () => {
     `);
 
     const details = el.shadowRoot!.querySelector(".details");
-    expect(details!.textContent!.trim()).to.equal("USB Drive");
+    expect(details!.textContent!.trim()).to.equal("USB drive");
   });
 
   it("shows description for SD card", async () => {

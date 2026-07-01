@@ -241,13 +241,13 @@ export class AppShell extends LitElement {
 
   private _getNextLabel(stepId: string | undefined): string {
     if (stepId === "flash" && this._flashError) {
-      return "Try Again";
+      return "Try again";
     }
     if (
       stepId === "install" &&
       (this._utmInstallError || this._proxmoxInstallError)
     ) {
-      return "Try Again";
+      return "Try again";
     }
     if (stepId === "confirm") {
       return "Install";
@@ -399,15 +399,15 @@ export class AppShell extends LitElement {
   private _getFlowTitle(flow: WizardFlow | null): string {
     switch (flow) {
       case "sbc":
-        return "Raspberry Pi & Other Boards";
+        return "Raspberry Pi & other boards";
       case "minipc":
         return "Generic (mini) PC";
       case "ha-hardware":
-        return "Home Assistant Hardware";
+        return "Home Assistant hardware";
       case "proxmox":
-        return "Proxmox Server";
+        return "Proxmox server";
       case "vm":
-        return "Virtual Machine";
+        return "Virtual machine";
       default:
         return "Installation";
     }

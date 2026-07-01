@@ -173,7 +173,7 @@ export class ProxmoxConfirmView extends LitElement {
         <div class="summary-row">
           <div class="icon-container">${this._renderProxmoxIcon()}</div>
           <div class="summary-info">
-            <p class="summary-label">Proxmox Server</p>
+            <p class="summary-label">Proxmox server</p>
             <p class="summary-value">Node: ${node}</p>
             <p class="summary-detail">Storage: ${storage}</p>
           </div>
@@ -185,10 +185,10 @@ export class ProxmoxConfirmView extends LitElement {
         <div class="summary-row">
           <div class="icon-container">${this._renderVmIcon()}</div>
           <div class="summary-info">
-            <p class="summary-label">Virtual Machine</p>
+            <p class="summary-label">Virtual machine</p>
             <p class="summary-value">${vmName} (ID: ${vmId})</p>
             <p class="summary-detail">
-              ${cpuCores} CPU Cores, ${this._formatMemory(memoryMb)}
+              ${cpuCores} CPU cores, ${this._formatMemory(memoryMb)}
             </p>
           </div>
         </div>

@@ -203,7 +203,7 @@ export class ConfirmDialog extends LitElement {
               Cancel
             </button>
             <button class="dialog-button danger" @click=${this._onConfirm}>
-              Erase and Install
+              Erase and install
             </button>
           </div>
         </div>

@@ -297,7 +297,7 @@ export class DriveSelectionView extends LitElement {
           <span class="error-icon">⚠️</span>
           <p class="error-message">${this._error}</p>
           <button class="retry-button" @click=${this._loadDrives}>
-            Try Again
+            Try again
           </button>
         </div>
       `;
@@ -333,7 +333,7 @@ export class DriveSelectionView extends LitElement {
 
     return html`
       <div class="drives-header">
-        <p class="drives-title">Available Drives</p>
+        <p class="drives-title">Available drives</p>
         <button
           class="refresh-button"
           @click=${this._loadDrives}

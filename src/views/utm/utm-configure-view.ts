@@ -410,7 +410,7 @@ export class UtmConfigureView extends LitElement {
     const diskIndex = diskSizeOptions.indexOf(this._diskSizeGb);
 
     return html`
-      <h2>Configure Virtual Machine</h2>
+      <h2>Configure virtual machine</h2>
       <p class="subtitle">Customize your Home Assistant VM settings</p>
 
       <div class="config-card">
@@ -437,8 +437,8 @@ export class UtmConfigureView extends LitElement {
           <div class="setting-icon">${this._renderCpuIcon()}</div>
           <div class="setting-content">
             <div class="setting-header">
-              <span class="setting-label">CPU Cores</span>
-              <span class="setting-value">${this._cpuCores} Cores</span>
+              <span class="setting-label">CPU cores</span>
+              <span class="setting-value">${this._cpuCores} cores</span>
             </div>
             <div class="slider-container">
               <input
@@ -485,7 +485,7 @@ export class UtmConfigureView extends LitElement {
           <div class="setting-icon">${this._renderDiskIcon()}</div>
           <div class="setting-content">
             <div class="setting-header">
-              <span class="setting-label">Disk Size</span>
+              <span class="setting-label">Disk size</span>
               <span class="setting-value"
                 >${this._formatDiskSize(this._diskSizeGb)}</span
               >
