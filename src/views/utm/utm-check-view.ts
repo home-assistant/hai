@@ -339,7 +339,7 @@ export class UtmCheckView extends LitElement {
         </div>
       </div>
       <button class="refresh-button" @click=${this._checkStatus}>
-        ${this._renderRefreshIcon()} Try Again
+        ${this._renderRefreshIcon()} Try again
       </button>
     `;
   }
